@@ -1,0 +1,3326 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>DES MP — Statistical Training Needs Assessment Dashboard</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,600;0,700;1,400&family=Inter:wght@300;400;500;600&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+
+      :root {
+        --bg: #ffffff;
+        --surface: #f7f8fa;
+        --surface2: #eef0f4;
+        --border: #d6d9e0;
+        --border-light: #e8eaef;
+        --text: #1a1f2e;
+        --text-mid: #4a5268;
+        --text-dim: #8892a4;
+        --accent-blue: #1a56a0;
+        --accent-blue-light: #dbe9f8;
+        --accent-green: #1a7a4a;
+        --accent-green-light: #d4f0e2;
+        --accent-amber: #b45309;
+        --accent-amber-light: #fef3c7;
+        --accent-red: #b91c1c;
+        --accent-red-light: #fee2e2;
+        --accent-purple: #6d28d9;
+        --accent-purple-light: #ede9fe;
+        --saffron: #e07b30;
+        --india-green: #138808;
+        --india-navy: #1a356e;
+        --score-0: #dc2626;
+        --score-1: #f97316;
+        --score-2: #eab308;
+        --score-3: #22c55e;
+        --score-4: #15803d;
+      }
+
+      body {
+        font-family: "Inter", sans-serif;
+        background: var(--bg);
+        color: var(--text);
+        font-size: 13.5px;
+        line-height: 1.6;
+      }
+
+      /* ── Government Header ── */
+      .gov-strip {
+        background: var(--india-navy);
+        padding: 5px 40px;
+        display: flex;
+        align-items: center;
+        gap: 16px;
+      }
+      .gov-strip-text {
+        color: rgba(255, 255, 255, 0.7);
+        font-size: 10.5px;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+      }
+      .gov-strip-sep {
+        color: rgba(255, 255, 255, 0.25);
+      }
+
+      header {
+        background: #fff;
+        border-bottom: 3px solid var(--saffron);
+        padding: 18px 40px 16px;
+      }
+      .header-inner {
+        display: flex;
+        align-items: flex-start;
+        justify-content: space-between;
+        gap: 20px;
+      }
+      .header-title h1 {
+        font-family: "EB Garamond", serif;
+        font-size: 20px;
+        font-weight: 700;
+        color: var(--india-navy);
+        line-height: 1.2;
+      }
+      .header-title h1 .hindi {
+        display: block;
+        font-size: 14px;
+        font-weight: 400;
+        font-style: italic;
+        color: var(--text-mid);
+        margin-top: 2px;
+      }
+      .header-title p {
+        font-size: 11.5px;
+        color: var(--text-mid);
+        margin-top: 4px;
+        letter-spacing: 0.02em;
+      }
+      .header-meta {
+        text-align: right;
+        display: flex;
+        flex-direction: column;
+        align-items: flex-end;
+        gap: 6px;
+      }
+      .header-badge {
+        background: var(--accent-blue-light);
+        border: 1px solid var(--accent-blue);
+        color: var(--accent-blue);
+        font-size: 11px;
+        font-weight: 600;
+        padding: 4px 12px;
+        border-radius: 4px;
+        letter-spacing: 0.04em;
+      }
+      .header-date {
+        font-size: 11px;
+        color: var(--text-dim);
+      }
+
+      /* ── District Filter Bar ── */
+      .filter-bar {
+        background: var(--surface);
+        border-bottom: 1px solid var(--border);
+        padding: 10px 40px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        flex-wrap: wrap;
+      }
+      .filter-label {
+        font-size: 11.5px;
+        font-weight: 600;
+        color: var(--text-mid);
+        text-transform: uppercase;
+        letter-spacing: 0.07em;
+        white-space: nowrap;
+      }
+      .filter-label .hindi-small {
+        font-weight: 400;
+        font-style: italic;
+        color: var(--text-dim);
+        text-transform: none;
+        letter-spacing: 0;
+      }
+      .district-btn {
+        font-family: "Inter", sans-serif;
+        font-size: 11.5px;
+        font-weight: 500;
+        color: var(--text-mid);
+        background: #fff;
+        border: 1px solid var(--border);
+        padding: 5px 13px;
+        border-radius: 3px;
+        cursor: pointer;
+        transition: all 0.15s;
+        white-space: nowrap;
+      }
+      .district-btn:hover {
+        border-color: var(--accent-blue);
+        color: var(--accent-blue);
+      }
+      .district-btn.active {
+        background: var(--india-navy);
+        border-color: var(--india-navy);
+        color: #fff;
+      }
+      .respondent-counter {
+        margin-left: auto;
+        font-size: 11.5px;
+        color: var(--text-dim);
+        background: #fff;
+        border: 1px solid var(--border);
+        padding: 5px 13px;
+        border-radius: 3px;
+      }
+      .respondent-counter span {
+        font-weight: 700;
+        color: var(--india-navy);
+      }
+      .small-sample-warn {
+        font-size: 11px;
+        color: var(--accent-amber);
+        background: var(--accent-amber-light);
+        border: 1px solid #fcd34d;
+        padding: 4px 10px;
+        border-radius: 3px;
+        display: none;
+      }
+
+      /* ── Tab Navigation ── */
+      .tab-bar {
+        background: #fff;
+        border-bottom: 1px solid var(--border);
+        padding: 0 40px;
+        display: flex;
+        gap: 0;
+        overflow-x: auto;
+        position: sticky;
+        top: 0;
+        z-index: 90;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
+      }
+      .tab-btn {
+        font-family: "Inter", sans-serif;
+        font-size: 12.5px;
+        font-weight: 500;
+        color: var(--text-dim);
+        background: none;
+        border: none;
+        padding: 13px 18px;
+        cursor: pointer;
+        border-bottom: 2px solid transparent;
+        transition: all 0.15s;
+        white-space: nowrap;
+      }
+      .tab-btn:hover {
+        color: var(--india-navy);
+      }
+      .tab-btn.active {
+        color: var(--india-navy);
+        border-bottom-color: var(--saffron);
+        font-weight: 600;
+      }
+
+      /* ── Main Layout ── */
+      main {
+        padding: 28px 40px;
+        max-width: 1380px;
+        margin: 0 auto;
+      }
+      .tab-panel {
+        display: none;
+      }
+      .tab-panel.active {
+        display: block;
+      }
+
+      .page-heading {
+        margin-bottom: 22px;
+        padding-bottom: 14px;
+        border-bottom: 1px solid var(--border-light);
+      }
+      .page-heading h2 {
+        font-family: "EB Garamond", serif;
+        font-size: 19px;
+        font-weight: 700;
+        color: var(--india-navy);
+      }
+      .page-heading .hindi-sub {
+        font-family: "EB Garamond", serif;
+        font-size: 13px;
+        font-style: italic;
+        color: var(--text-dim);
+        margin-top: 1px;
+      }
+      .page-heading p {
+        font-size: 12.5px;
+        color: var(--text-mid);
+        margin-top: 4px;
+      }
+
+      /* ── Grids ── */
+      .grid-4 {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 14px;
+        margin-bottom: 22px;
+      }
+      .grid-3 {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 18px;
+        margin-bottom: 22px;
+      }
+      .grid-2 {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 18px;
+        margin-bottom: 22px;
+      }
+      .grid-2-1 {
+        display: grid;
+        grid-template-columns: 2fr 1fr;
+        gap: 18px;
+        margin-bottom: 22px;
+      }
+      .full {
+        margin-bottom: 22px;
+      }
+      @media (max-width: 960px) {
+        .grid-4,
+        .grid-3,
+        .grid-2,
+        .grid-2-1 {
+          grid-template-columns: 1fr;
+        }
+        main {
+          padding: 16px 18px;
+        }
+        header {
+          padding: 14px 18px;
+        }
+        .filter-bar,
+        .tab-bar {
+          padding-left: 18px;
+          padding-right: 18px;
+        }
+      }
+
+      /* ── Stat Card ── */
+      .stat-card {
+        background: #fff;
+        border: 1px solid var(--border);
+        border-top: 3px solid var(--card-color, var(--india-navy));
+        border-radius: 4px;
+        padding: 18px 20px;
+        transition: box-shadow 0.15s;
+      }
+      .stat-card:hover {
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+      }
+      .stat-card .label {
+        font-size: 11px;
+        text-transform: uppercase;
+        letter-spacing: 0.09em;
+        color: var(--text-dim);
+        font-weight: 600;
+        margin-bottom: 8px;
+      }
+      .stat-card .label .hindi-label {
+        display: block;
+        font-size: 10.5px;
+        font-style: italic;
+        font-weight: 400;
+        text-transform: none;
+        letter-spacing: 0;
+        color: var(--text-dim);
+        margin-top: 1px;
+      }
+      .stat-card .value {
+        font-family: "EB Garamond", serif;
+        font-size: 38px;
+        font-weight: 700;
+        line-height: 1;
+        color: var(--card-color, var(--india-navy));
+      }
+      .stat-card .sub {
+        font-size: 11.5px;
+        color: var(--text-dim);
+        margin-top: 5px;
+      }
+
+      /* ── Panel ── */
+      .panel {
+        background: #fff;
+        border: 1px solid var(--border);
+        border-radius: 4px;
+        padding: 20px 22px;
+      }
+      .panel-title {
+        font-size: 12px;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+        color: var(--india-navy);
+        margin-bottom: 4px;
+        padding-bottom: 10px;
+        border-bottom: 1px solid var(--border-light);
+      }
+      .panel-title .hindi-sub {
+        display: block;
+        font-size: 11px;
+        font-style: italic;
+        font-weight: 400;
+        text-transform: none;
+        letter-spacing: 0;
+        color: var(--text-dim);
+        margin-top: 2px;
+      }
+
+      /* ── Horizontal Bar Chart ── */
+      .bar-row {
+        margin-bottom: 10px;
+      }
+      .bar-row-label {
+        font-size: 12px;
+        color: var(--text-mid);
+        margin-bottom: 3px;
+        display: flex;
+        justify-content: space-between;
+        align-items: baseline;
+      }
+      .bar-row-label .bar-n {
+        font-size: 11px;
+        color: var(--text-dim);
+      }
+      .bar-track {
+        background: var(--surface2);
+        border-radius: 2px;
+        height: 9px;
+        overflow: hidden;
+      }
+      .bar-fill {
+        height: 100%;
+        border-radius: 2px;
+        background: var(--india-navy);
+        transition: width 0.9s cubic-bezier(0.25, 0.8, 0.25, 1);
+      }
+
+      /* ── Stacked column chart ── */
+      .stacked-chart {
+        overflow-x: auto;
+      }
+      .stacked-chart-inner {
+        min-width: 300px;
+      }
+      .sc-col-group {
+        display: flex;
+        gap: 6px;
+        align-items: flex-end;
+        margin-bottom: 8px;
+      }
+      .sc-col {
+        flex: 1;
+        display: flex;
+        flex-direction: column-reverse;
+        border-radius: 2px;
+        overflow: hidden;
+        cursor: pointer;
+        transition: opacity 0.15s;
+      }
+      .sc-col:hover {
+        opacity: 0.88;
+      }
+      .sc-seg {
+        width: 100%;
+        transition: height 0.9s cubic-bezier(0.25, 0.8, 0.25, 1);
+      }
+      .sc-seg-0 {
+        background: var(--score-0);
+      }
+      .sc-seg-1 {
+        background: var(--score-1);
+      }
+      .sc-seg-2 {
+        background: var(--score-2);
+      }
+      .sc-seg-3 {
+        background: var(--score-3);
+      }
+      .sc-seg-4 {
+        background: var(--score-4);
+      }
+      .sc-labels {
+        display: flex;
+        gap: 6px;
+        margin-top: 6px;
+      }
+      .sc-label {
+        flex: 1;
+        font-size: 10px;
+        color: var(--text-dim);
+        text-align: center;
+        line-height: 1.2;
+        word-break: break-word;
+      }
+      .sc-legend {
+        display: flex;
+        gap: 12px;
+        flex-wrap: wrap;
+        margin-bottom: 14px;
+      }
+      .sc-leg-item {
+        display: flex;
+        align-items: center;
+        gap: 5px;
+        font-size: 11px;
+        color: var(--text-mid);
+      }
+      .sc-leg-dot {
+        width: 10px;
+        height: 10px;
+        border-radius: 1px;
+        flex-shrink: 0;
+      }
+
+      /* ── Priority vs Proficiency side-by-side ── */
+      .pvp-row {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 0;
+        border: 1px solid var(--border);
+        border-radius: 4px;
+        overflow: hidden;
+      }
+      .pvp-col {
+        padding: 14px 16px;
+      }
+      .pvp-col:first-child {
+        border-right: 1px solid var(--border-light);
+        background: #fafbfc;
+      }
+      .pvp-col-title {
+        font-size: 11px;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.07em;
+        color: var(--text-dim);
+        margin-bottom: 10px;
+        padding-bottom: 6px;
+        border-bottom: 1px solid var(--border-light);
+      }
+      .pvp-col-title.priority {
+        color: var(--accent-blue);
+      }
+      .pvp-col-title.proficiency {
+        color: var(--india-green);
+      }
+
+      /* ── Proficiency scale bar ── */
+      .prof-row {
+        margin-bottom: 10px;
+      }
+      .prof-label {
+        font-size: 12px;
+        color: var(--text-mid);
+        margin-bottom: 3px;
+        display: flex;
+        justify-content: space-between;
+      }
+      .prof-score {
+        font-weight: 700;
+        color: var(--india-navy);
+        font-size: 12px;
+      }
+      .prof-track {
+        background: var(--surface2);
+        border-radius: 2px;
+        height: 9px;
+        overflow: hidden;
+      }
+      .prof-fill {
+        height: 100%;
+        border-radius: 2px;
+        background: linear-gradient(
+          90deg,
+          var(--fill-a, #1a56a0),
+          var(--fill-b, #1a7a4a)
+        );
+        transition: width 0.9s cubic-bezier(0.25, 0.8, 0.25, 1);
+      }
+
+      /* ── Integrated Priority Theme Chart ──
+      .theme-row {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        margin-bottom: 10px;
+        padding: 10px 12px;
+        border: 1px solid var(--border-light);
+        border-radius: 4px;
+        background: #fff;
+        cursor: pointer;
+        transition: background 0.1s;
+      }
+      .theme-row:hover {
+        background: var(--surface);
+      }
+      .theme-priority-class {
+        font-size: 10px;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.06em;
+        padding: 2px 7px;
+        border-radius: 3px;
+        white-space: nowrap;
+        flex-shrink: 0;
+        width: 96px;
+        text-align: center;
+      }
+      .class-immediate {
+        background: #dcfce7;
+        color: #15803d;
+        border: 1px solid #86efac;
+      }
+      .class-phase1b {
+        background: #dbeafe;
+        color: #1d4ed8;
+        border: 1px solid #93c5fd;
+      }
+      .class-later {
+        background: #f3f4f6;
+        color: #6b7280;
+        border: 1px solid #d1d5db;
+      }
+      .theme-name {
+        flex: 1;
+        font-size: 12.5px;
+        color: var(--text);
+        font-weight: 500;
+      }
+      .theme-bars {
+        display: flex;
+        flex-direction: column;
+        gap: 3px;
+        width: 200px;
+        flex-shrink: 0;
+      }
+      .theme-bar-mini {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+      }
+      .theme-bar-mini-label {
+        font-size: 10px;
+        color: var(--text-dim);
+        width: 32px;
+        text-align: right;
+      }
+      .theme-bar-mini-track {
+        flex: 1;
+        background: var(--surface2);
+        border-radius: 2px;
+        height: 6px;
+        overflow: hidden;
+      }
+      .theme-bar-mini-fill {
+        height: 100%;
+        border-radius: 2px;
+        transition: width 0.9s;
+      }
+      .priority-fill {
+        background: var(--accent-blue);
+      }
+      .gap-fill {
+        background: var(--saffron);
+      }
+      .theme-score {
+        font-family: "EB Garamond", serif;
+        font-size: 18px;
+        font-weight: 700;
+        color: var(--india-navy);
+        width: 36px;
+        text-align: right;
+        flex-shrink: 0;
+      }
+
+      /* ── Bubble/Scatter Matrix ── */
+      .matrix-wrap {
+        position: relative;
+        background: #fff;
+        border: 1px solid var(--border);
+        border-radius: 4px;
+        padding: 16px;
+      }
+      .matrix-inner {
+        position: relative;
+      }
+      .matrix-quadrant-label {
+        position: absolute;
+        font-size: 10.5px;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.06em;
+        opacity: 0.45;
+        pointer-events: none;
+      }
+      .matrix-bubble {
+        position: absolute;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        transition: opacity 0.15s;
+        border: 2px solid rgba(255, 255, 255, 0.6);
+      }
+      .matrix-bubble:hover {
+        opacity: 0.85;
+        z-index: 10;
+      }
+      .matrix-bubble-label {
+        position: absolute;
+        font-size: 10px;
+        font-weight: 600;
+        color: #fff;
+        text-align: center;
+        line-height: 1.2;
+        padding: 2px;
+        pointer-events: none;
+      }
+      .matrix-axis-x,
+      .matrix-axis-y {
+        font-size: 10.5px;
+        color: var(--text-dim);
+        text-align: center;
+      }
+      .matrix-axis-y {
+        writing-mode: vertical-rl;
+        transform: rotate(180deg);
+        margin-right: 6px;
+      }
+
+      /* ── Workshop Cards ── */
+      .workshop-card {
+        border: 1px solid var(--border);
+        border-radius: 4px;
+        padding: 18px 20px;
+        background: #fff;
+        margin-bottom: 12px;
+        border-left: 4px solid var(--card-color, var(--india-navy));
+        transition: box-shadow 0.15s;
+      }
+      .workshop-card:hover {
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.07);
+      }
+      .workshop-header {
+        display: flex;
+        align-items: flex-start;
+        justify-content: space-between;
+        gap: 12px;
+        margin-bottom: 10px;
+      }
+      .workshop-number {
+        font-family: "EB Garamond", serif;
+        font-size: 28px;
+        font-weight: 700;
+        color: var(--card-color, var(--india-navy));
+        line-height: 1;
+        flex-shrink: 0;
+      }
+      .workshop-title {
+        font-size: 13.5px;
+        font-weight: 600;
+        color: var(--text);
+        flex: 1;
+      }
+      .workshop-phase {
+        font-size: 10.5px;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.06em;
+        padding: 3px 9px;
+        border-radius: 3px;
+        flex-shrink: 0;
+      }
+      .phase-1a {
+        background: #fef9c3;
+        color: #854d0e;
+        border: 1px solid #fde047;
+      }
+      .phase-1b {
+        background: #dbeafe;
+        color: #1e40af;
+        border: 1px solid #93c5fd;
+      }
+      .workshop-meta {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        margin-bottom: 10px;
+      }
+      .workshop-tag {
+        font-size: 11px;
+        color: var(--text-mid);
+        background: var(--surface);
+        border: 1px solid var(--border-light);
+        padding: 2px 9px;
+        border-radius: 3px;
+      }
+      .workshop-objectives {
+        font-size: 12px;
+        color: var(--text-mid);
+      }
+      .workshop-objectives li {
+        padding: 2px 0 2px 12px;
+        position: relative;
+      }
+      .workshop-objectives li::before {
+        content: "—";
+        position: absolute;
+        left: 0;
+        color: var(--text-dim);
+      }
+
+      /* ── Software stacked bar ── */
+      .sw-item {
+        margin-bottom: 12px;
+      }
+      .sw-label {
+        font-size: 12.5px;
+        color: var(--text-mid);
+        margin-bottom: 4px;
+        display: flex;
+        justify-content: space-between;
+      }
+      .sw-stack {
+        display: flex;
+        height: 14px;
+        border-radius: 2px;
+        overflow: hidden;
+        gap: 1px;
+      }
+      .sw-seg {
+        height: 100%;
+        transition: flex 0.8s;
+      }
+      .sw-seg-b {
+        background: #ef4444;
+      }
+      .sw-seg-i {
+        background: #f59e0b;
+      }
+      .sw-seg-a {
+        background: #22c55e;
+      }
+      .sw-legend-row {
+        display: flex;
+        gap: 14px;
+        margin-bottom: 14px;
+      }
+      .sw-leg {
+        display: flex;
+        align-items: center;
+        gap: 5px;
+        font-size: 11.5px;
+        color: var(--text-mid);
+      }
+      .sw-leg-dot {
+        width: 10px;
+        height: 10px;
+        border-radius: 1px;
+        flex-shrink: 0;
+      }
+
+      /* ── Feasibility Cards ── */
+      .feasibility-strip {
+        background: #fff7ed;
+        border: 1px solid #fed7aa;
+        border-radius: 4px;
+        padding: 16px 20px;
+        margin-bottom: 22px;
+      }
+      .feasibility-strip h3 {
+        font-size: 12px;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.07em;
+        color: var(--accent-amber);
+        margin-bottom: 12px;
+      }
+      .feasibility-grid {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 12px;
+      }
+      .feas-item {
+        text-align: center;
+      }
+      .feas-num {
+        font-family: "EB Garamond", serif;
+        font-size: 28px;
+        font-weight: 700;
+        color: var(--accent-amber);
+        line-height: 1;
+      }
+      .feas-label {
+        font-size: 11px;
+        color: var(--text-mid);
+        margin-top: 3px;
+        line-height: 1.3;
+      }
+
+      /* ── Key Findings Box ── */
+      .findings-box {
+        background: #f0f6ff;
+        border: 1px solid #bfdbfe;
+        border-radius: 4px;
+        padding: 16px 20px;
+        margin-bottom: 22px;
+      }
+      .findings-box h3 {
+        font-size: 12px;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.07em;
+        color: var(--accent-blue);
+        margin-bottom: 10px;
+      }
+      .findings-list {
+        list-style: none;
+      }
+      .findings-list li {
+        font-size: 12.5px;
+        color: var(--text-mid);
+        padding: 3px 0 3px 16px;
+        position: relative;
+      }
+      .findings-list li::before {
+        content: "→";
+        position: absolute;
+        left: 0;
+        color: var(--accent-blue);
+      }
+
+      /* ── District distribution mini bars ── */
+      .district-dist-row {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        margin-bottom: 8px;
+      }
+      .dist-name {
+        font-size: 12px;
+        color: var(--text-mid);
+        width: 120px;
+        flex-shrink: 0;
+      }
+      .dist-bar-track {
+        flex: 1;
+        background: var(--surface2);
+        border-radius: 2px;
+        height: 8px;
+        overflow: hidden;
+      }
+      .dist-bar-fill {
+        height: 100%;
+        background: var(--india-navy);
+        border-radius: 2px;
+        transition: width 0.9s;
+      }
+      .dist-n {
+        font-size: 11.5px;
+        color: var(--text-dim);
+        width: 24px;
+        text-align: right;
+      }
+      .dist-badge {
+        font-size: 10px;
+        color: var(--accent-amber);
+        background: var(--accent-amber-light);
+        padding: 1px 5px;
+        border-radius: 2px;
+        border: 1px solid #fcd34d;
+      }
+
+      /* ── Tooltip ── */
+      #tooltip {
+        position: fixed;
+        z-index: 999;
+        background: var(--india-navy);
+        color: #fff;
+        font-size: 11.5px;
+        padding: 6px 11px;
+        border-radius: 4px;
+        pointer-events: none;
+        opacity: 0;
+        transition: opacity 0.12s;
+        max-width: 220px;
+        line-height: 1.4;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+      }
+      #tooltip.show {
+        opacity: 1;
+      }
+
+      /* ── Proficiency scale key ── */
+      .prof-key-strip {
+        display: flex;
+        gap: 8px;
+        flex-wrap: wrap;
+        margin-bottom: 14px;
+        padding: 8px 12px;
+        background: var(--surface);
+        border: 1px solid var(--border-light);
+        border-radius: 3px;
+      }
+      .prof-key-item {
+        display: flex;
+        align-items: center;
+        gap: 5px;
+        font-size: 11px;
+        color: var(--text-mid);
+      }
+      .prof-key-dot {
+        width: 10px;
+        height: 10px;
+        border-radius: 1px;
+        flex-shrink: 0;
+      }
+
+      /* ── Role tabs ── */
+      .role-tabs {
+        display: flex;
+        gap: 6px;
+        margin-bottom: 16px;
+        flex-wrap: wrap;
+      }
+      .role-tab {
+        font-size: 12px;
+        font-weight: 500;
+        padding: 6px 14px;
+        border-radius: 3px;
+        border: 1px solid var(--border);
+        background: #fff;
+        color: var(--text-mid);
+        cursor: pointer;
+        transition: all 0.15s;
+      }
+      .role-tab:hover {
+        border-color: var(--india-navy);
+        color: var(--india-navy);
+      }
+      .role-tab.active {
+        background: var(--india-navy);
+        border-color: var(--india-navy);
+        color: #fff;
+      }
+
+      /* ── Footer ── */
+      footer {
+        background: var(--india-navy);
+        color: rgba(255, 255, 255, 0.75);
+        padding: 24px 40px 20px;
+        margin-top: 40px;
+        border-top: 3px solid var(--saffron);
+      }
+      .footer-inner {
+        max-width: 1380px;
+        margin: 0 auto;
+      }
+      .footer-top {
+        display: grid;
+        grid-template-columns: 1fr 1fr 1fr;
+        gap: 24px;
+        margin-bottom: 18px;
+        padding-bottom: 16px;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+      }
+      .footer-col-title {
+        font-size: 10.5px;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.09em;
+        color: rgba(255, 255, 255, 0.5);
+        margin-bottom: 7px;
+      }
+      .footer-col-body {
+        font-size: 11.5px;
+        line-height: 1.7;
+        color: rgba(255, 255, 255, 0.7);
+      }
+      .footer-col-body em {
+        font-style: italic;
+        color: rgba(255, 255, 255, 0.5);
+      }
+      .footer-bottom {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        flex-wrap: wrap;
+        gap: 8px;
+      }
+      .footer-bottom-left {
+        font-size: 11px;
+        color: rgba(255, 255, 255, 0.45);
+      }
+      .footer-developer {
+        font-size: 11.5px;
+        color: rgba(255, 255, 255, 0.6);
+        text-align: center;
+      }
+      .footer-developer strong {
+        color: rgba(255, 255, 255, 0.85);
+      }
+      .footer-disclaimer {
+        font-size: 10.5px;
+        color: rgba(255, 255, 255, 0.4);
+        text-align: right;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="tooltip"></div>
+
+    <!-- Government strip -->
+    <div class="gov-strip">
+      <span class="gov-strip-text">Government of Madhya Pradesh</span>
+      <span class="gov-strip-sep">·</span>
+      <span class="gov-strip-text"
+        >Directorate of Economics and Statistics</span
+      >
+      <span class="gov-strip-sep">·</span>
+      <span class="gov-strip-text"
+        >मध्यप्रदेश शासन — संचालनालय आर्थिकी एवं सांख्यिकी</span
+      >
+    </div>
+
+    <!-- Header -->
+    <header>
+      <div class="header-inner">
+        <div class="header-title">
+          <h1>
+            Statistical Training Needs Assessment Dashboard
+            <span class="hindi"
+              >सांख्यिकीय प्रशिक्षण आवश्यकता आकलन डैशबोर्ड</span
+            >
+          </h1>
+          <p>
+            Directorate of Economics and Statistics, Madhya Pradesh
+            &nbsp;·&nbsp; Indore Division Pilot, 2026
+          </p>
+        </div>
+        <div class="header-meta">
+          <div class="header-badge">Indore Division &nbsp;·&nbsp; N = 23</div>
+          <div class="header-date">
+            Survey period: Early 2026 &nbsp;·&nbsp; Reported: April 2026
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <!-- District Filter -->
+    <div class="filter-bar">
+      <span class="filter-label"
+        >Filter by District <span class="hindi-small">/ जिला</span></span
+      >
+      <button class="district-btn active" onclick="setDistrict('all', this)">
+        All Districts
+      </button>
+      <button class="district-btn" onclick="setDistrict('Indore', this)">
+        Indore (9)
+      </button>
+      <button class="district-btn" onclick="setDistrict('Dhar', this)">
+        Dhar (3)
+      </button>
+      <button class="district-btn" onclick="setDistrict('Alirajpur', this)">
+        Alirajpur (3)
+      </button>
+      <button class="district-btn" onclick="setDistrict('Barwani', this)">
+        Barwani (3)
+      </button>
+      <button class="district-btn" onclick="setDistrict('Burhanpur', this)">
+        Burhanpur (2)
+      </button>
+      <button class="district-btn" onclick="setDistrict('Khandwa', this)">
+        Khandwa (1)
+      </button>
+      <button class="district-btn" onclick="setDistrict('Khargone', this)">
+        Khargone (1)
+      </button>
+      <button class="district-btn" onclick="setDistrict('Jhabua', this)">
+        Jhabua (1)
+      </button>
+      <div class="respondent-counter">
+        Showing <span id="resp-count">23</span> respondents
+      </div>
+      <div class="small-sample-warn" id="sample-warn">
+        ⚠ Small sample — treat as indicative only
+      </div>
+    </div>
+
+    <!-- Tab Navigation -->
+    <div class="tab-bar">
+      <button class="tab-btn active" onclick="switchTab('overview', this)">
+        Overview
+      </button>
+      <button class="tab-btn" onclick="switchTab('profile', this)">
+        Respondent Profile
+      </button>
+      <button class="tab-btn" onclick="switchTab('competencies', this)">
+        Competency Ratings
+      </button>
+      <button class="tab-btn" onclick="switchTab('priorities', this)">
+        Integrated Priorities
+      </button>
+      <button class="tab-btn" onclick="switchTab('software', this)">
+        Software Training
+      </button>
+      <button class="tab-btn" onclick="switchTab('workshops', this)">
+        Workshop Roadmap
+      </button>
+      <button class="tab-btn" onclick="switchTab('readiness', this)">
+        Learning Readiness
+      </button>
+    </div>
+
+    <main>
+      <!-- ══════════════════════════════════════
+     TAB 1 — OVERVIEW
+══════════════════════════════════════ -->
+      <div class="tab-panel active" id="tab-overview">
+        <div class="page-heading">
+          <h2>
+            Survey Overview <span class="hindi-sub">— सर्वेक्षण अवलोकन</span>
+          </h2>
+          <p>
+            High-level summary of the Indore Division pilot Training Needs
+            Assessment.
+          </p>
+        </div>
+
+        <div class="grid-4">
+          <div class="stat-card" style="--card-color: #1a356e">
+            <div class="label">
+              Total Respondents<span class="hindi-label">कुल उत्तरदाता</span>
+            </div>
+            <div class="value" id="ov-total">23</div>
+            <div class="sub">8 district offices · Indore Division</div>
+          </div>
+          <div class="stat-card" style="--card-color: #1a56a0">
+            <div class="label">
+              Block Level Investigators<span class="hindi-label"
+                >खंड स्तर अन्वेषक</span
+              >
+            </div>
+            <div class="value" id="ov-bli">18</div>
+            <div class="sub">78.3% of total respondents</div>
+          </div>
+          <div class="stat-card" style="--card-color: #1a7a4a">
+            <div class="label">
+              Assistant Statistical Officers<span class="hindi-label"
+                >सहायक सांख्यिकी अधिकारी</span
+              >
+            </div>
+            <div class="value" id="ov-aso">3</div>
+            <div class="sub">13.0% of total respondents</div>
+          </div>
+          <div class="stat-card" style="--card-color: #b45309">
+            <div class="label">
+              District Statistical Officers<span class="hindi-label"
+                >जिला सांख्यिकी अधिकारी</span
+              >
+            </div>
+            <div class="value" id="ov-dso">2</div>
+            <div class="sub">8.7% of total respondents</div>
+          </div>
+        </div>
+
+        <div class="findings-box">
+          <h3>Key Findings from the Pilot — प्रमुख निष्कर्ष</h3>
+          <ul class="findings-list">
+            <li>
+              Staff capability clusters at "basic awareness to working
+              knowledge" — the need is for practical strengthening, not remedial
+              re-education.
+            </li>
+            <li>
+              Three themes qualify as <strong>immediate</strong> workshop
+              priorities: Survey Operations &amp; Field Data Quality, Data
+              Management &amp; Scrutiny, and Digital Tools &amp; Office Systems.
+            </li>
+            <li>
+              91.3% of respondents have ≤2 hours per week available for learning
+              — training must be compact, modular, and blended.
+            </li>
+            <li>
+              30.4% rely solely on a smartphone — all materials must be
+              mobile-compatible.
+            </li>
+            <li>
+              STATA/E-Views (91.3%), R/Python (82.6%), and AI Tools (78.3%)
+              attract overwhelmingly beginner-level demand — advanced analytics
+              training should be sequenced after foundational digital modules.
+            </li>
+            <li>
+              Workload and lack of time is the single dominant barrier, cited by
+              73.9% of respondents in all its combinations.
+            </li>
+          </ul>
+        </div>
+
+        <div class="grid-2">
+          <div class="panel">
+            <div class="panel-title">
+              Overall Competency Level by Post
+              <span class="hindi-sub"
+                >पद-अनुसार दक्षता स्तर — Scale: 0 (Not Aware) to 4
+                (Advanced)</span
+              >
+            </div>
+            <div style="margin-bottom: 14px">
+              <div class="prof-key-strip">
+                <div class="prof-key-item">
+                  <div class="prof-key-dot" style="background: #dc2626"></div>
+                  0 — Not aware
+                </div>
+                <div class="prof-key-item">
+                  <div class="prof-key-dot" style="background: #f97316"></div>
+                  1 — Basic awareness
+                </div>
+                <div class="prof-key-item">
+                  <div class="prof-key-dot" style="background: #eab308"></div>
+                  2 — Working knowledge
+                </div>
+                <div class="prof-key-item">
+                  <div class="prof-key-dot" style="background: #22c55e"></div>
+                  3 — Proficient
+                </div>
+                <div class="prof-key-item">
+                  <div class="prof-key-dot" style="background: #15803d"></div>
+                  4 — Advanced
+                </div>
+              </div>
+            </div>
+            <div
+              class="prof-row"
+              data-tip="Block Level Investigators: average 2.02 out of 4. Between basic awareness and working knowledge."
+            >
+              <div class="prof-label">
+                Block Level Investigators (n=18)
+                <span class="prof-score">2.02 / 4</span>
+              </div>
+              <div class="prof-track">
+                <div
+                  class="prof-fill"
+                  style="--fill-a: #1a56a0; --fill-b: #2563eb; width: 0%"
+                  data-target="50.5%"
+                ></div>
+              </div>
+            </div>
+            <div
+              class="prof-row"
+              data-tip="Assistant Statistical Officers: average 2.33 out of 4. Early working knowledge."
+            >
+              <div class="prof-label">
+                Assistant Statistical Officers (n=3)
+                <span class="prof-score">2.33 / 4</span>
+              </div>
+              <div class="prof-track">
+                <div
+                  class="prof-fill"
+                  style="--fill-a: #1a7a4a; --fill-b: #16a34a; width: 0%"
+                  data-target="58.3%"
+                ></div>
+              </div>
+            </div>
+            <div
+              class="prof-row"
+              data-tip="District Statistical Officers: average 2.45 out of 4. Moderate confidence, uneven across domains."
+            >
+              <div class="prof-label">
+                District Statistical Officers (n=2)
+                <span class="prof-score">2.45 / 4</span>
+              </div>
+              <div class="prof-track">
+                <div
+                  class="prof-fill"
+                  style="--fill-a: #b45309; --fill-b: #d97706; width: 0%"
+                  data-target="61.3%"
+                ></div>
+              </div>
+            </div>
+            <p
+              style="
+                font-size: 11px;
+                color: var(--text-dim);
+                margin-top: 10px;
+                font-style: italic;
+              "
+            >
+              Source: Table 4.1, TNA Report 2026. Scores reflect self-assessed
+              proficiency on a 0–4 scale.
+            </p>
+          </div>
+
+          <div class="panel">
+            <div class="panel-title">
+              District-wise Response Distribution
+              <span class="hindi-sub">जिला-वार प्रतिक्रिया वितरण</span>
+            </div>
+            <div
+              class="district-dist-row"
+              data-tip="Indore: 9 respondents (39.1%)"
+            >
+              <span class="dist-name">Indore / इंदौर</span>
+              <div class="dist-bar-track">
+                <div
+                  class="dist-bar-fill"
+                  style="width: 0%"
+                  data-target="100%"
+                ></div>
+              </div>
+              <span class="dist-n">9</span>
+            </div>
+            <div
+              class="district-dist-row"
+              data-tip="Dhar: 3 respondents (13.0%)"
+            >
+              <span class="dist-name">Dhar / धार</span>
+              <div class="dist-bar-track">
+                <div
+                  class="dist-bar-fill"
+                  style="width: 0%"
+                  data-target="33.3%"
+                ></div>
+              </div>
+              <span class="dist-n">3</span>
+            </div>
+            <div
+              class="district-dist-row"
+              data-tip="Alirajpur: 3 respondents (13.0%)"
+            >
+              <span class="dist-name">Alirajpur / अलिराजपुर</span>
+              <div class="dist-bar-track">
+                <div
+                  class="dist-bar-fill"
+                  style="width: 0%"
+                  data-target="33.3%"
+                ></div>
+              </div>
+              <span class="dist-n">3</span>
+            </div>
+            <div
+              class="district-dist-row"
+              data-tip="Barwani: 3 respondents (13.0%)"
+            >
+              <span class="dist-name">Barwani / बड़वानी</span>
+              <div class="dist-bar-track">
+                <div
+                  class="dist-bar-fill"
+                  style="width: 0%"
+                  data-target="33.3%"
+                ></div>
+              </div>
+              <span class="dist-n">3</span>
+            </div>
+            <div
+              class="district-dist-row"
+              data-tip="Burhanpur: 2 respondents (8.7%)"
+            >
+              <span class="dist-name">Burhanpur / बुरहानपुर</span>
+              <div class="dist-bar-track">
+                <div
+                  class="dist-bar-fill"
+                  style="width: 0%"
+                  data-target="22.2%"
+                ></div>
+              </div>
+              <span class="dist-n">2</span><span class="dist-badge">Small</span>
+            </div>
+            <div
+              class="district-dist-row"
+              data-tip="Khandwa: 1 respondent (4.3%)"
+            >
+              <span class="dist-name">Khandwa / खंडवा</span>
+              <div class="dist-bar-track">
+                <div
+                  class="dist-bar-fill"
+                  style="width: 0%"
+                  data-target="11.1%"
+                ></div>
+              </div>
+              <span class="dist-n">1</span><span class="dist-badge">Small</span>
+            </div>
+            <div
+              class="district-dist-row"
+              data-tip="Khargone: 1 respondent (4.3%)"
+            >
+              <span class="dist-name">Khargone / खरगोन</span>
+              <div class="dist-bar-track">
+                <div
+                  class="dist-bar-fill"
+                  style="width: 0%"
+                  data-target="11.1%"
+                ></div>
+              </div>
+              <span class="dist-n">1</span><span class="dist-badge">Small</span>
+            </div>
+            <div
+              class="district-dist-row"
+              data-tip="Jhabua: 1 respondent (4.3%)"
+            >
+              <span class="dist-name">Jhabua / झाबुआ</span>
+              <div class="dist-bar-track">
+                <div
+                  class="dist-bar-fill"
+                  style="width: 0%"
+                  data-target="11.1%"
+                ></div>
+              </div>
+              <span class="dist-n">1</span><span class="dist-badge">Small</span>
+            </div>
+            <p
+              style="
+                font-size: 11px;
+                color: var(--text-dim);
+                margin-top: 10px;
+                font-style: italic;
+              "
+            >
+              Districts with 1–2 respondents should be treated as indicative,
+              not conclusive.
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <!-- ══════════════════════════════════════
+     TAB 2 — RESPONDENT PROFILE
+══════════════════════════════════════ -->
+      <div class="tab-panel" id="tab-profile">
+        <div class="page-heading">
+          <h2>
+            Respondent Profile
+            <span class="hindi-sub">— उत्तरदाता प्रोफाइल</span>
+          </h2>
+          <p>
+            Demographics, experience, educational background, and digital
+            infrastructure of DES Indore Division staff.
+          </p>
+        </div>
+        <div class="grid-3">
+          <div class="panel">
+            <div class="panel-title">
+              Years of Service in DES<span class="hindi-sub"
+                >संचालनालय में सेवा के वर्ष</span
+              >
+            </div>
+            <div class="bar-row" data-tip="6–10 years: 8 respondents (34.8%)">
+              <div class="bar-row-label">
+                6–10 years <span class="bar-n">8</span>
+              </div>
+              <div class="bar-track">
+                <div
+                  class="bar-fill"
+                  style="background: #1a56a0; width: 0%"
+                  data-target="88.9%"
+                ></div>
+              </div>
+            </div>
+            <div class="bar-row" data-tip="11–15 years: 6 respondents (26.1%)">
+              <div class="bar-row-label">
+                11–15 years <span class="bar-n">6</span>
+              </div>
+              <div class="bar-track">
+                <div
+                  class="bar-fill"
+                  style="background: #1a56a0; width: 0%"
+                  data-target="66.7%"
+                ></div>
+              </div>
+            </div>
+            <div class="bar-row" data-tip="20+ years: 5 respondents (21.7%)">
+              <div class="bar-row-label">
+                20 years or more <span class="bar-n">5</span>
+              </div>
+              <div class="bar-track">
+                <div
+                  class="bar-fill"
+                  style="background: #1a56a0; width: 0%"
+                  data-target="55.6%"
+                ></div>
+              </div>
+            </div>
+            <div class="bar-row" data-tip="16–20 years: 3 respondents (13.0%)">
+              <div class="bar-row-label">
+                16–20 years <span class="bar-n">3</span>
+              </div>
+              <div class="bar-track">
+                <div
+                  class="bar-fill"
+                  style="background: #1a56a0; width: 0%"
+                  data-target="33.3%"
+                ></div>
+              </div>
+            </div>
+            <div
+              class="bar-row"
+              data-tip="Less than 5 years: 1 respondent (4.3%)"
+            >
+              <div class="bar-row-label">
+                Less than 5 years <span class="bar-n">1</span>
+              </div>
+              <div class="bar-track">
+                <div
+                  class="bar-fill"
+                  style="background: #1a56a0; width: 0%"
+                  data-target="11.1%"
+                ></div>
+              </div>
+            </div>
+            <p
+              style="
+                font-size: 11px;
+                color: var(--text-dim);
+                margin-top: 8px;
+                font-style: italic;
+              "
+            >
+              60.9% have 6–15 years experience — a mature, experienced
+              workforce.
+            </p>
+          </div>
+          <div class="panel">
+            <div class="panel-title">
+              Highest Education Qualification<span class="hindi-sub"
+                >उच्चतम शैक्षणिक योग्यता</span
+              >
+            </div>
+            <div
+              class="bar-row"
+              data-tip="Postgraduate (Master's degree): 16 respondents (69.6%)"
+            >
+              <div class="bar-row-label">
+                Postgraduate (Master's degree) <span class="bar-n">16</span>
+              </div>
+              <div class="bar-track">
+                <div
+                  class="bar-fill"
+                  style="background: #1a7a4a; width: 0%"
+                  data-target="100%"
+                ></div>
+              </div>
+            </div>
+            <div
+              class="bar-row"
+              data-tip="Graduate (Bachelor's degree): 5 respondents (21.7%)"
+            >
+              <div class="bar-row-label">
+                Graduate (Bachelor's degree) <span class="bar-n">5</span>
+              </div>
+              <div class="bar-track">
+                <div
+                  class="bar-fill"
+                  style="background: #1a7a4a; width: 0%"
+                  data-target="31.3%"
+                ></div>
+              </div>
+            </div>
+            <div
+              class="bar-row"
+              data-tip="MPhil / PhD or equivalent: 2 respondents (8.7%)"
+            >
+              <div class="bar-row-label">
+                MPhil or PhD <span class="bar-n">2</span>
+              </div>
+              <div class="bar-track">
+                <div
+                  class="bar-fill"
+                  style="background: #1a7a4a; width: 0%"
+                  data-target="12.5%"
+                ></div>
+              </div>
+            </div>
+            <p
+              style="
+                font-size: 11px;
+                color: var(--text-dim);
+                margin-top: 8px;
+                font-style: italic;
+              "
+            >
+              78.3% hold postgraduate or higher qualifications. Training need is
+              for applied role-specific skills, not basic academic remediation.
+            </p>
+          </div>
+          <div class="panel">
+            <div class="panel-title">
+              Prior Training Exposure<span class="hindi-sub"
+                >पूर्व प्रशिक्षण अनुभव</span
+              >
+            </div>
+            <div
+              class="bar-row"
+              data-tip="Short course or workshop (less than 1 week): 16 respondents"
+            >
+              <div class="bar-row-label">
+                Short course / workshop (&lt;1 week)
+                <span class="bar-n">16</span>
+              </div>
+              <div class="bar-track">
+                <div
+                  class="bar-fill"
+                  style="background: #6d28d9; width: 0%"
+                  data-target="100%"
+                ></div>
+              </div>
+            </div>
+            <div
+              class="bar-row"
+              data-tip="Formal degree or diploma in statistics or economics: 8 respondents"
+            >
+              <div class="bar-row-label">
+                Formal degree in statistics/economics
+                <span class="bar-n">8</span>
+              </div>
+              <div class="bar-track">
+                <div
+                  class="bar-fill"
+                  style="background: #6d28d9; width: 0%"
+                  data-target="50%"
+                ></div>
+              </div>
+            </div>
+            <div
+              class="bar-row"
+              data-tip="Online course (SWAYAM, Coursera, etc.): 6 respondents"
+            >
+              <div class="bar-row-label">
+                Online course (SWAYAM / Coursera) <span class="bar-n">6</span>
+              </div>
+              <div class="bar-track">
+                <div
+                  class="bar-fill"
+                  style="background: #6d28d9; width: 0%"
+                  data-target="37.5%"
+                ></div>
+              </div>
+            </div>
+            <div
+              class="bar-row"
+              data-tip="No formal training beyond on-the-job experience: 6 respondents"
+            >
+              <div class="bar-row-label">
+                No formal training (on-the-job only)
+                <span class="bar-n">6</span>
+              </div>
+              <div class="bar-track">
+                <div
+                  class="bar-fill"
+                  style="background: #6d28d9; width: 0%"
+                  data-target="37.5%"
+                ></div>
+              </div>
+            </div>
+            <p
+              style="
+                font-size: 11px;
+                color: var(--text-dim);
+                margin-top: 8px;
+                font-style: italic;
+              "
+            >
+              Respondents could select multiple options. 26.1% have had no
+              structured training beyond on-the-job experience.
+            </p>
+          </div>
+        </div>
+
+        <div class="grid-3">
+          <div class="panel">
+            <div class="panel-title">
+              Device Access for Online Learning<span class="hindi-sub"
+                >ऑनलाइन शिक्षा के लिए उपकरण</span
+              >
+            </div>
+            <div
+              class="bar-row"
+              data-tip="Both smartphone and computer/laptop: 12 respondents (52.2%)"
+            >
+              <div class="bar-row-label">
+                Both smartphone and computer/laptop
+                <span class="bar-n">12</span>
+              </div>
+              <div class="bar-track">
+                <div
+                  class="bar-fill"
+                  style="background: #1a7a4a; width: 0%"
+                  data-target="100%"
+                ></div>
+              </div>
+            </div>
+            <div
+              class="bar-row"
+              data-tip="Smartphone only: 7 respondents (30.4%)"
+            >
+              <div class="bar-row-label">
+                Smartphone only <span class="bar-n">7</span>
+              </div>
+              <div class="bar-track">
+                <div
+                  class="bar-fill"
+                  style="background: #b45309; width: 0%"
+                  data-target="58.3%"
+                ></div>
+              </div>
+            </div>
+            <div
+              class="bar-row"
+              data-tip="Computer or laptop only: 4 respondents (17.4%)"
+            >
+              <div class="bar-row-label">
+                Computer / laptop only <span class="bar-n">4</span>
+              </div>
+              <div class="bar-track">
+                <div
+                  class="bar-fill"
+                  style="background: #b91c1c; width: 0%"
+                  data-target="33.3%"
+                ></div>
+              </div>
+            </div>
+            <p
+              style="
+                font-size: 11px;
+                color: var(--text-dim);
+                margin-top: 8px;
+                font-style: italic;
+              "
+            >
+              30.4% rely solely on a smartphone. All digital training materials
+              must be mobile-compatible.
+            </p>
+          </div>
+          <div class="panel">
+            <div class="panel-title">
+              Internet Access Quality<span class="hindi-sub"
+                >इंटरनेट की गुणवत्ता</span
+              >
+            </div>
+            <div
+              class="bar-row"
+              data-tip="Reliable internet: 14 respondents (60.9%)"
+            >
+              <div class="bar-row-label">
+                Reliable <span class="bar-n">14</span>
+              </div>
+              <div class="bar-track">
+                <div
+                  class="bar-fill"
+                  style="background: #1a7a4a; width: 0%"
+                  data-target="100%"
+                ></div>
+              </div>
+            </div>
+            <div
+              class="bar-row"
+              data-tip="Sometimes unreliable: 8 respondents (34.8%)"
+            >
+              <div class="bar-row-label">
+                Sometimes unreliable <span class="bar-n">8</span>
+              </div>
+              <div class="bar-track">
+                <div
+                  class="bar-fill"
+                  style="background: #b45309; width: 0%"
+                  data-target="57.1%"
+                ></div>
+              </div>
+            </div>
+            <div class="bar-row" data-tip="Not available: 1 respondent (4.3%)">
+              <div class="bar-row-label">
+                Not available <span class="bar-n">1</span>
+              </div>
+              <div class="bar-track">
+                <div
+                  class="bar-fill"
+                  style="background: #b91c1c; width: 0%"
+                  data-target="7.1%"
+                ></div>
+              </div>
+            </div>
+            <p
+              style="
+                font-size: 11px;
+                color: var(--text-dim);
+                margin-top: 8px;
+                font-style: italic;
+              "
+            >
+              39.1% face unreliable or no internet. Fully online
+              continuous-stream delivery is not feasible as the primary format.
+            </p>
+          </div>
+          <div class="panel">
+            <div class="panel-title">
+              Available Learning Time Per Week<span class="hindi-sub"
+                >प्रति सप्ताह उपलब्ध शिक्षण समय</span
+              >
+            </div>
+            <div
+              class="bar-row"
+              data-tip="1 to 2 hours per week: 14 respondents (60.9%)"
+            >
+              <div class="bar-row-label">
+                1–2 hours per week <span class="bar-n">14</span>
+              </div>
+              <div class="bar-track">
+                <div
+                  class="bar-fill"
+                  style="background: #1a56a0; width: 0%"
+                  data-target="100%"
+                ></div>
+              </div>
+            </div>
+            <div
+              class="bar-row"
+              data-tip="Less than 1 hour per week: 7 respondents (30.4%)"
+            >
+              <div class="bar-row-label">
+                Less than 1 hour per week <span class="bar-n">7</span>
+              </div>
+              <div class="bar-track">
+                <div
+                  class="bar-fill"
+                  style="background: #b45309; width: 0%"
+                  data-target="50%"
+                ></div>
+              </div>
+            </div>
+            <div
+              class="bar-row"
+              data-tip="3 to 4 hours per week: 1 respondent (4.3%)"
+            >
+              <div class="bar-row-label">
+                3–4 hours per week <span class="bar-n">1</span>
+              </div>
+              <div class="bar-track">
+                <div
+                  class="bar-fill"
+                  style="background: #1a7a4a; width: 0%"
+                  data-target="7.1%"
+                ></div>
+              </div>
+            </div>
+            <div
+              class="bar-row"
+              data-tip="5 or more hours per week: 1 respondent (4.3%)"
+            >
+              <div class="bar-row-label">
+                5 or more hours per week <span class="bar-n">1</span>
+              </div>
+              <div class="bar-track">
+                <div
+                  class="bar-fill"
+                  style="background: #1a7a4a; width: 0%"
+                  data-target="7.1%"
+                ></div>
+              </div>
+            </div>
+            <p
+              style="
+                font-size: 11px;
+                color: var(--text-dim);
+                margin-top: 8px;
+                font-style: italic;
+              "
+            >
+              <strong>91.3%</strong> have 2 hours or less per week — the single
+              most critical design constraint.
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <!-- ══════════════════════════════════════
+     TAB 3 — COMPETENCY RATINGS
+══════════════════════════════════════ -->
+      <div class="tab-panel" id="tab-competencies">
+        <div class="page-heading">
+          <h2>
+            Competency Self-Ratings
+            <span class="hindi-sub">— दक्षता स्व-मूल्यांकन</span>
+          </h2>
+          <p>
+            Distribution of self-assessed proficiency scores (0–4) across all
+            role-specific functional and domain competencies. Charts show actual
+            count of respondents at each level — not just averages.
+          </p>
+        </div>
+
+        <div class="prof-key-strip">
+          <strong
+            style="font-size: 11px; color: var(--text-mid); margin-right: 4px"
+            >Proficiency Scale:</strong
+          >
+          <div class="prof-key-item">
+            <div class="prof-key-dot" style="background: #dc2626"></div>
+            0 — Not aware / Cannot perform
+          </div>
+          <div class="prof-key-item">
+            <div class="prof-key-dot" style="background: #f97316"></div>
+            1 — Basic awareness (knows terminology, needs guidance)
+          </div>
+          <div class="prof-key-item">
+            <div class="prof-key-dot" style="background: #eab308"></div>
+            2 — Working knowledge (can perform with support)
+          </div>
+          <div class="prof-key-item">
+            <div class="prof-key-dot" style="background: #22c55e"></div>
+            3 — Proficient (can perform independently)
+          </div>
+          <div class="prof-key-item">
+            <div class="prof-key-dot" style="background: #15803d"></div>
+            4 — Advanced (can guide others, troubleshoot)
+          </div>
+        </div>
+
+        <div class="role-tabs">
+          <button class="role-tab active" onclick="switchRole('BLI', this)">
+            Block Level Investigators (n=18)
+          </button>
+          <button class="role-tab" onclick="switchRole('ASO', this)">
+            Assistant Statistical Officers (n=3)
+          </button>
+          <button class="role-tab" onclick="switchRole('DSO', this)">
+            District Statistical Officers (n=2)
+          </button>
+        </div>
+
+        <div id="role-comp-container"></div>
+      </div>
+
+      <!-- ══════════════════════════════════════
+     TAB 4 — INTEGRATED PRIORITIES
+══════════════════════════════════════ -->
+      <div class="tab-panel" id="tab-priorities">
+        <div class="page-heading">
+          <h2>
+            Integrated Training Priorities
+            <span class="hindi-sub">— एकीकृत प्रशिक्षण प्राथमिकताएँ</span>
+          </h2>
+          <p>
+            Based on Section 6 of the TNA Report. Each theme is scored by
+            combining the <em>Priority Signal</em> (% of respondents selecting
+            it) with the <em>Need Signal</em> (weighted skill gap from the
+            maximum of 4). Themes scoring highest on both dimensions are
+            immediate workshop candidates.
+          </p>
+        </div>
+
+        <div class="grid-2">
+          <div class="panel full">
+            <div class="panel-title">
+              Theme-wise Combined Prioritisation Score
+              <span class="hindi-sub"
+                >विषयवार संयुक्त प्राथमिकता स्कोर — Source: Table 6.2, TNA
+                Report 2026</span
+              >
+            </div>
+            <div id="theme-chart"></div>
+          </div>
+
+          <div class="panel">
+            <div class="panel-title">
+              Prioritisation Matrix: Demand vs. Skill Gap
+              <span class="hindi-sub"
+                >प्राथमिकता मैट्रिक्स — X-axis: % respondents selecting; Y-axis:
+                skill gap score</span
+              >
+            </div>
+            <div id="matrix-chart"></div>
+          </div>
+        </div>
+
+        <div class="panel full">
+          <div class="panel-title">
+            Priority Areas: What Respondents Selected Most
+            <span class="hindi-sub"
+              >उत्तरदाताओं द्वारा चयनित प्राथमिकता क्षेत्र</span
+            >
+          </div>
+          <div
+            style="margin-bottom: 12px; font-size: 12px; color: var(--text-mid)"
+          >
+            Each respondent selected up to 3 competency areas where they needed
+            the most support. The chart below shows how many times each item was
+            selected across all roles.
+          </div>
+          <div id="priority-demand-chart"></div>
+        </div>
+      </div>
+
+      <!-- ══════════════════════════════════════
+     TAB 5 — SOFTWARE TRAINING
+══════════════════════════════════════ -->
+      <div class="tab-panel" id="tab-software">
+        <div class="page-heading">
+          <h2>
+            Software Training Demand
+            <span class="hindi-sub">— सॉफ्टवेयर प्रशिक्षण माँग</span>
+          </h2>
+          <p>
+            Desired training level (Beginner / Intermediate / Advanced) for each
+            software tool. All 23 respondents expressed interest in all five
+            software categories.
+          </p>
+        </div>
+
+        <div class="grid-2">
+          <div class="panel">
+            <div class="panel-title">
+              Training Level Demand by Software
+              <span class="hindi-sub"
+                >सॉफ्टवेयर के अनुसार प्रशिक्षण स्तर माँग</span
+              >
+            </div>
+            <div class="sw-legend-row">
+              <div class="sw-leg">
+                <div class="sw-leg-dot" style="background: #ef4444"></div>
+                Beginner
+              </div>
+              <div class="sw-leg">
+                <div class="sw-leg-dot" style="background: #f59e0b"></div>
+                Intermediate
+              </div>
+              <div class="sw-leg">
+                <div class="sw-leg-dot" style="background: #22c55e"></div>
+                Advanced
+              </div>
+            </div>
+            <div id="sw-chart"></div>
+          </div>
+          <div class="panel">
+            <div class="panel-title">
+              Beginner-Level Demand — The Starting Point
+              <span class="hindi-sub"
+                >शुरुआती स्तर माँग — Source: Table 3.3, TNA Report</span
+              >
+            </div>
+            <p
+              style="
+                font-size: 12px;
+                color: var(--text-mid);
+                margin-bottom: 14px;
+              "
+            >
+              The overwhelming beginner demand for statistical and analytical
+              tools signals that foundational digital training must precede any
+              advanced analytics workshops.
+            </p>
+            <div
+              class="bar-row"
+              data-tip="STATA / E-Views: 21 of 23 respondents (91.3%) seek beginner-level training"
+            >
+              <div class="bar-row-label">
+                STATA / E-Views <span class="bar-n">21 of 23 — 91.3%</span>
+              </div>
+              <div class="bar-track">
+                <div
+                  class="bar-fill"
+                  style="background: #dc2626; width: 0%"
+                  data-target="91.3%"
+                ></div>
+              </div>
+            </div>
+            <div
+              class="bar-row"
+              data-tip="R / Python: 19 of 23 respondents (82.6%) seek beginner-level training"
+            >
+              <div class="bar-row-label">
+                R / Python <span class="bar-n">19 of 23 — 82.6%</span>
+              </div>
+              <div class="bar-track">
+                <div
+                  class="bar-fill"
+                  style="background: #f97316; width: 0%"
+                  data-target="82.6%"
+                ></div>
+              </div>
+            </div>
+            <div
+              class="bar-row"
+              data-tip="AI Tools: 18 of 23 respondents (78.3%) seek beginner-level training"
+            >
+              <div class="bar-row-label">
+                Artificial Intelligence Tools
+                <span class="bar-n">18 of 23 — 78.3%</span>
+              </div>
+              <div class="bar-track">
+                <div
+                  class="bar-fill"
+                  style="background: #eab308; width: 0%"
+                  data-target="78.3%"
+                ></div>
+              </div>
+            </div>
+            <div
+              class="bar-row"
+              data-tip="e-Office: 11 of 23 respondents (47.8%) seek beginner-level training"
+            >
+              <div class="bar-row-label">
+                e-Office <span class="bar-n">11 of 23 — 47.8%</span>
+              </div>
+              <div class="bar-track">
+                <div
+                  class="bar-fill"
+                  style="background: #1a56a0; width: 0%"
+                  data-target="47.8%"
+                ></div>
+              </div>
+            </div>
+            <div
+              class="bar-row"
+              data-tip="MS Office: 8 of 23 respondents (34.8%) seek beginner-level training"
+            >
+              <div class="bar-row-label">
+                MS Office (Word, Excel, PowerPoint)
+                <span class="bar-n">8 of 23 — 34.8%</span>
+              </div>
+              <div class="bar-track">
+                <div
+                  class="bar-fill"
+                  style="background: #1a7a4a; width: 0%"
+                  data-target="34.8%"
+                ></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ══════════════════════════════════════
+     TAB 6 — WORKSHOP ROADMAP
+══════════════════════════════════════ -->
+      <div class="tab-panel" id="tab-workshops">
+        <div class="page-heading">
+          <h2>
+            Recommended Workshop Roadmap
+            <span class="hindi-sub">— अनुशंसित कार्यशाला रोडमैप</span>
+          </h2>
+          <p>
+            A five-workshop package for the first training cycle in Indore
+            Division. Based on Section 8, TNA Report 2026. Phase 1A workshops
+            should begin first; Phase 1B follows after the operational core is
+            complete.
+          </p>
+        </div>
+
+        <div class="feasibility-strip">
+          <h3>Delivery Design Constraints — प्रसव डिज़ाइन बाधाएँ</h3>
+          <div class="feasibility-grid">
+            <div class="feas-item">
+              <div class="feas-num">91%</div>
+              <div class="feas-label">
+                of respondents have ≤2 hours per week available for learning
+              </div>
+            </div>
+            <div class="feas-item">
+              <div class="feas-num">52%</div>
+              <div class="feas-label">
+                prefer blended delivery (classroom + online)
+              </div>
+            </div>
+            <div class="feas-item">
+              <div class="feas-num">30%</div>
+              <div class="feas-label">
+                are smartphone-only learners — mobile compatibility is essential
+              </div>
+            </div>
+            <div class="feas-item">
+              <div class="feas-num">74%</div>
+              <div class="feas-label">
+                cite workload and lack of time as the main training barrier
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="workshop-card" style="--card-color: #1a356e">
+          <div class="workshop-header">
+            <div class="workshop-number">W1</div>
+            <div class="workshop-title">
+              Survey Operations, Interview Practice and Field Data Quality
+            </div>
+            <div class="workshop-phase phase-1a">Phase 1A — Start First</div>
+          </div>
+          <div class="workshop-meta">
+            <div class="workshop-tag">
+              Primary audience: Block Level Investigators
+            </div>
+            <div class="workshop-tag">
+              Participation: Assistant Statistical Officers
+            </div>
+            <div class="workshop-tag">Duration: 1.5 days + short follow-up</div>
+            <div class="workshop-tag">
+              Mode: Blended — strong classroom component
+            </div>
+            <div class="workshop-tag">Priority: Very High</div>
+          </div>
+          <ul class="workshop-objectives">
+            <li>
+              Standardise field protocols and statistical schedule handling
+            </li>
+            <li>
+              Improve interview quality and respondent interaction techniques
+            </li>
+            <li>Reduce avoidable field errors and omissions</li>
+            <li>
+              Build routine field-level quality checks into daily work practice
+            </li>
+          </ul>
+        </div>
+
+        <div class="workshop-card" style="--card-color: #1a56a0">
+          <div class="workshop-header">
+            <div class="workshop-number">W2</div>
+            <div class="workshop-title">
+              Data Management, Scrutiny and Quality Assurance
+            </div>
+            <div class="workshop-phase phase-1a">
+              Phase 1A — Immediately After W1
+            </div>
+          </div>
+          <div class="workshop-meta">
+            <div class="workshop-tag">
+              Primary audience: Block Level Investigators and Assistant
+              Statistical Officers
+            </div>
+            <div class="workshop-tag">Duration: 1 day + practice sheets</div>
+            <div class="workshop-tag">Mode: Blended</div>
+            <div class="workshop-tag">Priority: Very High</div>
+          </div>
+          <ul class="workshop-objectives">
+            <li>Strengthen scrutiny of completed schedules and data entries</li>
+            <li>Identify common error types and inconsistency patterns</li>
+            <li>Improve record keeping discipline and validation routines</li>
+            <li>Introduce simple quality assurance checklists for field use</li>
+          </ul>
+        </div>
+
+        <div class="workshop-card" style="--card-color: #1a7a4a">
+          <div class="workshop-header">
+            <div class="workshop-number">W3</div>
+            <div class="workshop-title">
+              Digital Tools, e-Office and Office Workflow Management
+            </div>
+            <div class="workshop-phase phase-1a">Phase 1A / Early 1B</div>
+          </div>
+          <div class="workshop-meta">
+            <div class="workshop-tag">
+              Primary audience: Block Level Investigators and Assistant
+              Statistical Officers
+            </div>
+            <div class="workshop-tag">
+              Selective participation: District Statistical Officers
+            </div>
+            <div class="workshop-tag">Duration: 1 day</div>
+            <div class="workshop-tag">Mode: Blended — demonstration-heavy</div>
+            <div class="workshop-tag">Priority: Very High</div>
+          </div>
+          <ul class="workshop-objectives">
+            <li>
+              Improve practical use of Microsoft Office and official templates
+            </li>
+            <li>Strengthen e-Office and File/DAK workflow management</li>
+            <li>Improve digital communication and document handling</li>
+            <li>Reduce process delays caused by weak digital fluency</li>
+          </ul>
+        </div>
+
+        <div class="workshop-card" style="--card-color: #b45309">
+          <div class="workshop-header">
+            <div class="workshop-number">W4</div>
+            <div class="workshop-title">
+              Reporting, File and Record Systems, and Statistical Communication
+            </div>
+            <div class="workshop-phase phase-1b">Phase 1B</div>
+          </div>
+          <div class="workshop-meta">
+            <div class="workshop-tag">
+              Primary audience: Block Level Investigators and Assistant
+              Statistical Officers
+            </div>
+            <div class="workshop-tag">
+              Selective participation: District Statistical Officers
+            </div>
+            <div class="workshop-tag">Duration: 0.5–1 day</div>
+            <div class="workshop-tag">
+              Mode: Classroom-led with templates and examples
+            </div>
+            <div class="workshop-tag">Priority: High</div>
+          </div>
+          <ul class="workshop-objectives">
+            <li>
+              Improve noting, drafting, and routine statistical communication
+            </li>
+            <li>Standardise file movement and record maintenance procedures</li>
+            <li>
+              Improve preparation of concise reports, briefs, and statistical
+              returns
+            </li>
+            <li>
+              Connect documentation quality with upstream data quality outcomes
+            </li>
+          </ul>
+        </div>
+
+        <div class="workshop-card" style="--card-color: #6d28d9">
+          <div class="workshop-header">
+            <div class="workshop-number">W5</div>
+            <div class="workshop-title">
+              Applied Data Analysis, Visualisation and Statistical Software
+            </div>
+            <div class="workshop-phase phase-1b">Phase 1B — Targeted Track</div>
+          </div>
+          <div class="workshop-meta">
+            <div class="workshop-tag">
+              Primary audience: Assistant Statistical Officers
+            </div>
+            <div class="workshop-tag">
+              Selective participation: District Statistical Officers
+            </div>
+            <div class="workshop-tag">
+              Duration: 2 days or 4 half-day sessions
+            </div>
+            <div class="workshop-tag">
+              Mode: Blended — guided hands-on practice
+            </div>
+            <div class="workshop-tag">Priority: High (Targeted)</div>
+          </div>
+          <ul class="workshop-objectives">
+            <li>
+              Build confidence in descriptive analysis and simple data
+              interpretation
+            </li>
+            <li>
+              Improve preparation of charts, tables, and short analytical notes
+            </li>
+            <li>
+              Introduce beginner-level statistical software workflow (STATA / R)
+            </li>
+            <li>
+              Connect statistical concepts to operational outputs and planning
+              reports
+            </li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- ══════════════════════════════════════
+     TAB 7 — LEARNING READINESS
+══════════════════════════════════════ -->
+      <div class="tab-panel" id="tab-readiness">
+        <div class="page-heading">
+          <h2>
+            Learning Readiness and Training Barriers
+            <span class="hindi-sub">— शिक्षण तत्परता एवं बाधाएँ</span>
+          </h2>
+          <p>
+            Preferred training modalities and constraints reported by
+            respondents. These feasibility findings are central to workshop
+            design, not secondary background information.
+          </p>
+        </div>
+
+        <div class="grid-2">
+          <div class="panel">
+            <div class="panel-title">
+              Preferred Training Mode<span class="hindi-sub"
+                >पसंदीदा प्रशिक्षण विधि</span
+              >
+            </div>
+            <div
+              class="bar-row"
+              data-tip="Blended learning (online + classroom): 12 respondents (52.2%)"
+            >
+              <div class="bar-row-label">
+                Blended learning (online and classroom combined)
+                <span class="bar-n">12</span>
+              </div>
+              <div class="bar-track">
+                <div
+                  class="bar-fill"
+                  style="background: #1a56a0; width: 0%"
+                  data-target="100%"
+                ></div>
+              </div>
+            </div>
+            <div
+              class="bar-row"
+              data-tip="Online self-paced (mobile-friendly): 5 respondents (21.7%)"
+            >
+              <div class="bar-row-label">
+                Online self-paced — mobile-friendly <span class="bar-n">5</span>
+              </div>
+              <div class="bar-track">
+                <div
+                  class="bar-fill"
+                  style="background: #1a56a0; width: 0%"
+                  data-target="41.7%"
+                ></div>
+              </div>
+            </div>
+            <div
+              class="bar-row"
+              data-tip="Traditional classroom sessions: 3 respondents (13.0%)"
+            >
+              <div class="bar-row-label">
+                Traditional classroom sessions <span class="bar-n">3</span>
+              </div>
+              <div class="bar-track">
+                <div
+                  class="bar-fill"
+                  style="background: #1a56a0; width: 0%"
+                  data-target="25%"
+                ></div>
+              </div>
+            </div>
+            <div
+              class="bar-row"
+              data-tip="Online live sessions at fixed times: 2 respondents (8.7%)"
+            >
+              <div class="bar-row-label">
+                Online live sessions (fixed time) <span class="bar-n">2</span>
+              </div>
+              <div class="bar-track">
+                <div
+                  class="bar-fill"
+                  style="background: #1a56a0; width: 0%"
+                  data-target="16.7%"
+                ></div>
+              </div>
+            </div>
+            <div
+              class="bar-row"
+              data-tip="Other or no preference: 1 respondent (4.3%)"
+            >
+              <div class="bar-row-label">
+                Other / No preference <span class="bar-n">1</span>
+              </div>
+              <div class="bar-track">
+                <div
+                  class="bar-fill"
+                  style="background: #1a56a0; width: 0%"
+                  data-target="8.3%"
+                ></div>
+              </div>
+            </div>
+          </div>
+
+          <div class="panel">
+            <div class="panel-title">
+              Main Training Barriers (Aggregated)
+              <span class="hindi-sub"
+                >प्रशिक्षण की मुख्य बाधाएँ — Respondents could select multiple
+                options</span
+              >
+            </div>
+            <div
+              class="bar-row"
+              data-tip="Workload and lack of time: cited by approximately 17 respondents (73.9%) across all response combinations"
+            >
+              <div class="bar-row-label">
+                Workload and lack of time <span class="bar-n">~17</span>
+              </div>
+              <div class="bar-track">
+                <div
+                  class="bar-fill"
+                  style="background: #b91c1c; width: 0%"
+                  data-target="100%"
+                ></div>
+              </div>
+            </div>
+            <div
+              class="bar-row"
+              data-tip="Internet or device limitations: 5 respondents (21.7%)"
+            >
+              <div class="bar-row-label">
+                Internet or device limitations <span class="bar-n">5</span>
+              </div>
+              <div class="bar-track">
+                <div
+                  class="bar-fill"
+                  style="background: #b91c1c; width: 0%"
+                  data-target="29.4%"
+                ></div>
+              </div>
+            </div>
+            <div
+              class="bar-row"
+              data-tip="Lack of recognition or incentive for completing training: 3 respondents (13.0%)"
+            >
+              <div class="bar-row-label">
+                Lack of recognition or incentive <span class="bar-n">3</span>
+              </div>
+              <div class="bar-track">
+                <div
+                  class="bar-fill"
+                  style="background: #b91c1c; width: 0%"
+                  data-target="17.6%"
+                ></div>
+              </div>
+            </div>
+            <div
+              class="bar-row"
+              data-tip="Language barriers: 3 respondents (13.0%)"
+            >
+              <div class="bar-row-label">
+                Language barriers <span class="bar-n">3</span>
+              </div>
+              <div class="bar-track">
+                <div
+                  class="bar-fill"
+                  style="background: #b91c1c; width: 0%"
+                  data-target="17.6%"
+                ></div>
+              </div>
+            </div>
+            <div
+              class="bar-row"
+              data-tip="Course difficulty or anxiety about mathematics and programming: 2 respondents (8.7%)"
+            >
+              <div class="bar-row-label">
+                Course difficulty or anxiety about mathematics
+                <span class="bar-n">2</span>
+              </div>
+              <div class="bar-track">
+                <div
+                  class="bar-fill"
+                  style="background: #b91c1c; width: 0%"
+                  data-target="11.8%"
+                ></div>
+              </div>
+            </div>
+            <div
+              class="bar-row"
+              data-tip="Uncertainty about which course to choose: 2 respondents (8.7%)"
+            >
+              <div class="bar-row-label">
+                Not sure which course to choose <span class="bar-n">2</span>
+              </div>
+              <div class="bar-track">
+                <div
+                  class="bar-fill"
+                  style="background: #b91c1c; width: 0%"
+                  data-target="11.8%"
+                ></div>
+              </div>
+            </div>
+            <p
+              style="
+                font-size: 11px;
+                color: var(--text-dim);
+                margin-top: 8px;
+                font-style: italic;
+              "
+            >
+              Workload is the dominant barrier. Training sessions must be short,
+              structured, and scheduled at agreed times rather than left to
+              self-driven completion.
+            </p>
+          </div>
+        </div>
+      </div>
+    </main>
+
+    <!-- ══════════════════════════════════════ FOOTER ══════════════════════════════════════ -->
+    <footer>
+      <div class="footer-inner">
+        <div class="footer-top">
+          <div>
+            <div class="footer-col-title">Source Document</div>
+            <div class="footer-col-body">
+              <em
+                >Analysis of Statistical Training Needs for Capacity Building in
+                DES, Madhya Pradesh</em
+              ><br />
+              A Pilot Study of Indore Division · April 2026<br />
+              Directorate of Economics and Statistics, Government of Madhya
+              Pradesh<br />
+              In association with Pahlé India Foundation (PIF), New Delhi
+            </div>
+          </div>
+          <div>
+            <div class="footer-col-title">Framework and Methodology</div>
+            <div class="footer-col-body">
+              Assessment based on a structured, role-specific questionnaire
+              adapted for DES, Madhya Pradesh context, 2025–26
+            </div>
+          </div>
+          <div>
+            <div class="footer-col-title">Project Context</div>
+            <div class="footer-col-body">
+              GIZ India-funded project: "Revising GSDP and GDDP Frameworks for
+              Evidence-Based Planning in Madhya Pradesh"<br />
+              Under the Memorandum of Understanding between DES and Pahlé India
+              Foundation, signed May 21, 2025
+            </div>
+          </div>
+        </div>
+        <div class="footer-bottom">
+          <div class="footer-bottom-left">
+            Dashboard · Indore Division Pilot · 2026 · For internal planning and
+            review use only
+          </div>
+          <div class="footer-developer">
+            Developed by <strong>Samuel D. David</strong>
+          </div>
+          <div class="footer-disclaimer">
+            Data based on self-reported responses. District-level results with
+            n&lt;5 are indicative only.
+          </div>
+        </div>
+      </div>
+    </footer>
+
+    <script>
+      // ═══════════════════════════════
+      // DATA
+      // ═══════════════════════════════
+      const DISTRICT_DATA = {
+        all: { total: 23, bli: 18, aso: 3, dso: 2 },
+        Indore: { total: 9, bli: 6, aso: 2, dso: 1 },
+        Dhar: { total: 3, bli: 2, aso: 1, dso: 0 },
+        Alirajpur: { total: 3, bli: 3, aso: 0, dso: 0 },
+        Barwani: { total: 3, bli: 3, aso: 0, dso: 0 },
+        Burhanpur: { total: 2, bli: 1, aso: 0, dso: 1 },
+        Khandwa: { total: 1, bli: 1, aso: 0, dso: 0 },
+        Khargone: { total: 1, bli: 1, aso: 0, dso: 0 },
+        Jhabua: { total: 1, bli: 1, aso: 0, dso: 0 },
+      };
+
+      const COMP_DATA = {
+        BLI: {
+          functional: [
+            {
+              name: "Data Analytics — Data Management",
+              avg: 1.94,
+              dist: { 0: 1, 1: 4, 2: 7, 3: 5 },
+            },
+            {
+              name: "Digital Fluency — Digital Tools and Platforms",
+              avg: 1.8,
+              dist: { 0: 1, 1: 5, 2: 6, 3: 2, 4: 1 },
+            },
+            {
+              name: "Office Management — File/DAK Management (including e-Office)",
+              avg: 2.19,
+              dist: { 1: 5, 2: 6, 3: 2, 4: 3 },
+            },
+            {
+              name: "Citizen Centricity — Citizen Partnering and Collaboration",
+              avg: 2.13,
+              dist: { 1: 6, 2: 4, 3: 2, 4: 3 },
+            },
+          ],
+          domain: [
+            {
+              name: "Data Collection — Field Survey Techniques and Interview Methods",
+              avg: 2.17,
+              dist: { 1: 6, 2: 5, 3: 5, 4: 2 },
+            },
+            {
+              name: "Statistical Concepts — Basic Understanding of Commerce, Economics, Statistics and Mathematics",
+              avg: 2.0,
+              dist: { 1: 8, 2: 4, 3: 4, 4: 2 },
+            },
+            {
+              name: "Survey Instruments — Understanding and Filling Statistical Schedules",
+              avg: 2.11,
+              dist: { 1: 7, 2: 4, 3: 5, 4: 2 },
+            },
+            {
+              name: "Data Scrutiny — Checking Data for Consistency, Completeness and Accuracy",
+              avg: 1.76,
+              dist: { 1: 9, 2: 4, 3: 3, 4: 1 },
+            },
+            {
+              name: "Field Operations — Knowledge of Field Logistics and Navigation",
+              avg: 1.94,
+              dist: { 1: 8, 2: 5, 3: 3, 4: 2 },
+            },
+            {
+              name: "Record Keeping — Maintenance of Field Notes and Survey Records",
+              avg: 2.11,
+              dist: { 1: 7, 2: 4, 3: 5, 4: 2 },
+            },
+          ],
+        },
+        ASO: {
+          functional: [
+            {
+              name: "Data Analytics — Data Analysis and Visualisation",
+              avg: 2.0,
+              dist: { 0: 1, 3: 2 },
+            },
+            {
+              name: "Digital Fluency — Digital Tools and Platforms",
+              avg: 2.33,
+              dist: { 1: 1, 3: 2 },
+            },
+            {
+              name: "Monitoring and Evaluation — Evaluation of Outcomes and Outputs",
+              avg: 2.67,
+              dist: { 1: 1, 3: 1, 4: 1 },
+            },
+            {
+              name: "Office Management — Technical Proposal and Report Writing",
+              avg: 2.33,
+              dist: { 1: 1, 3: 2 },
+            },
+          ],
+          domain: [
+            {
+              name: "Statistical Methods — Sampling, Data Collection and Analysis Techniques",
+              avg: 2.0,
+              dist: { 2: 3 },
+            },
+            {
+              name: "Economic Indicators — Understanding of Key Economic Indicators (GDP, Inflation, Employment)",
+              avg: 2.0,
+              dist: { 1: 1, 2: 1, 3: 1 },
+            },
+            {
+              name: "Data Management — Data Validation, Cleaning and Database Management",
+              avg: 2.33,
+              dist: { 1: 1, 3: 2 },
+            },
+            {
+              name: "Computer Applications — Proficiency in MS Excel, PGDCA and Other Software",
+              avg: 2.67,
+              dist: { 2: 1, 3: 2 },
+            },
+            {
+              name: "Survey Management — Supervision of Field Surveys and Quality Control",
+              avg: 2.67,
+              dist: { 1: 1, 3: 1, 4: 1 },
+            },
+            {
+              name: "Regional Planning — Basic Knowledge of Regional Planning and Economic Development",
+              avg: 2.33,
+              dist: { 1: 1, 3: 2 },
+            },
+          ],
+        },
+        DSO: {
+          functional: [
+            {
+              name: "Data Analytics — Data Analysis and Visualisation",
+              avg: 2.5,
+              dist: { 1: 1, 4: 1 },
+            },
+            {
+              name: "Office Management — Noting and Drafting of Official Communications",
+              avg: 2.5,
+              dist: { 1: 1, 4: 1 },
+            },
+            {
+              name: "Project Management — Project Evaluation and Monitoring",
+              avg: 3.0,
+              dist: { 2: 1, 4: 1 },
+            },
+            {
+              name: "Digital Fluency — Digital Tools and Platforms",
+              avg: 2.0,
+              dist: { 0: 1, 4: 1 },
+            },
+          ],
+          domain: [
+            {
+              name: "Statistical Methods — Applied Statistics, Econometrics and Survey Methodologies",
+              avg: 2.0,
+              dist: { 1: 1, 3: 1 },
+            },
+            {
+              name: "Economic Concepts — Macro and Micro Economics and Public Finance",
+              avg: 2.0,
+              dist: { 1: 1, 3: 1 },
+            },
+            {
+              name: "Data Analysis Software — Proficiency in SPSS, Stata or R",
+              avg: 2.0,
+              dist: { 1: 1, 3: 1 },
+            },
+            {
+              name: "Program Monitoring — Monitoring and Evaluation Frameworks for Government Schemes",
+              avg: 2.5,
+              dist: { 2: 1, 3: 1 },
+            },
+            {
+              name: "Data Collection — Supervision of Field Data Collection and Data Quality",
+              avg: 3.0,
+              dist: { 2: 1, 4: 1 },
+            },
+            {
+              name: "Report Writing — Preparation of Analytical Reports and Statistical Abstracts",
+              avg: 3.0,
+              dist: { 2: 1, 4: 1 },
+            },
+          ],
+        },
+      };
+
+      const THEMES = [
+        {
+          name: "Survey Operations and Field Data Collection",
+          priority: 69.6,
+          gap: 46.6,
+          combined: 58.1,
+          cls: "immediate",
+        },
+        {
+          name: "Data Management, Scrutiny and Quality Assurance",
+          priority: 60.9,
+          gap: 51.0,
+          combined: 55.9,
+          cls: "immediate",
+        },
+        {
+          name: "Digital Tools and Office Systems",
+          priority: 60.9,
+          gap: 48.4,
+          combined: 54.6,
+          cls: "immediate",
+        },
+        {
+          name: "Statistical, Economic and Planning Concepts",
+          priority: 26.1,
+          gap: 49.0,
+          combined: 37.6,
+          cls: "phase1b",
+        },
+        {
+          name: "Data Analysis, Statistics and Software",
+          priority: 21.7,
+          gap: 47.9,
+          combined: 34.8,
+          cls: "phase1b",
+        },
+        {
+          name: "Coordination, Monitoring and Citizen Interface",
+          priority: 17.4,
+          gap: 42.6,
+          combined: 30.0,
+          cls: "later",
+        },
+        {
+          name: "Reporting, Documentation and Communication",
+          priority: 8.7,
+          gap: 35.7,
+          combined: 22.2,
+          cls: "later",
+        },
+      ];
+
+      const PRIORITIES_DEMAND = [
+        {
+          name: "Digital Fluency — Digital Tools and Platforms",
+          count: 9,
+          role: "BLI",
+        },
+        {
+          name: "Data Collection — Field Survey Techniques",
+          count: 9,
+          role: "BLI",
+        },
+        { name: "Data Analytics — Data Management", count: 8, role: "BLI" },
+        {
+          name: "Office Management — File/DAK Management",
+          count: 8,
+          role: "BLI",
+        },
+        {
+          name: "Record Keeping — Field Notes and Survey Records",
+          count: 5,
+          role: "BLI",
+        },
+        { name: "Statistical Concepts", count: 4, role: "BLI" },
+        {
+          name: "Survey Instruments — Statistical Schedules",
+          count: 3,
+          role: "BLI",
+        },
+        {
+          name: "Data Scrutiny — Checking Data for Accuracy",
+          count: 3,
+          role: "BLI",
+        },
+        { name: "Field Operations", count: 2, role: "BLI" },
+        {
+          name: "Citizen Centricity — Citizen Partnering",
+          count: 2,
+          role: "BLI",
+        },
+        { name: "Data Analysis and Visualisation", count: 3, role: "ASO/DSO" },
+        {
+          name: "Data Collection Supervision and Quality",
+          count: 2,
+          role: "ASO/DSO",
+        },
+        { name: "Statistical Methods", count: 1, role: "ASO/DSO" },
+        { name: "Report Writing", count: 1, role: "ASO/DSO" },
+        {
+          name: "Data Analysis Software (SPSS/Stata/R)",
+          count: 1,
+          role: "ASO/DSO",
+        },
+        {
+          name: "Program Monitoring — Government Schemes",
+          count: 1,
+          role: "ASO/DSO",
+        },
+      ];
+
+      // ═══════════════════════════════
+      // STATE
+      // ═══════════════════════════════
+      let currentDistrict = "all";
+      let currentRole = "BLI";
+
+      // ═══════════════════════════════
+      // TOOLTIP
+      // ═══════════════════════════════
+      const tt = document.getElementById("tooltip");
+      function addTooltip(el, text) {
+        el.addEventListener("mouseenter", () => {
+          tt.textContent = text;
+          tt.classList.add("show");
+        });
+        el.addEventListener("mousemove", (e) => {
+          tt.style.left = e.clientX + 13 + "px";
+          tt.style.top = e.clientY - 30 + "px";
+        });
+        el.addEventListener("mouseleave", () => tt.classList.remove("show"));
+      }
+      document
+        .querySelectorAll("[data-tip]")
+        .forEach((el) => addTooltip(el, el.dataset.tip));
+
+      // ═══════════════════════════════
+      // TAB SWITCH
+      // ═══════════════════════════════
+      function switchTab(name, btn) {
+        document
+          .querySelectorAll(".tab-panel")
+          .forEach((p) => p.classList.remove("active"));
+        document
+          .querySelectorAll(".tab-btn")
+          .forEach((b) => b.classList.remove("active"));
+        document.getElementById("tab-" + name).classList.add("active");
+        btn.classList.add("active");
+        setTimeout(animateAllBars, 60);
+      }
+
+      // ═══════════════════════════════
+      // ROLE SWITCH
+      // ═══════════════════════════════
+      function switchRole(role, btn) {
+        currentRole = role;
+        document
+          .querySelectorAll(".role-tab")
+          .forEach((b) => b.classList.remove("active"));
+        btn.classList.add("active");
+        renderCompetencies();
+      }
+
+      // ═══════════════════════════════
+      // DISTRICT FILTER
+      // ═══════════════════════════════
+      function setDistrict(d, btn) {
+        currentDistrict = d;
+        document
+          .querySelectorAll(".district-btn")
+          .forEach((b) => b.classList.remove("active"));
+        btn.classList.add("active");
+        const dd = DISTRICT_DATA[d];
+        document.getElementById("resp-count").textContent = dd.total;
+        document.getElementById("ov-total").textContent = dd.total;
+        document.getElementById("ov-bli").textContent = dd.bli;
+        document.getElementById("ov-aso").textContent = dd.aso;
+        document.getElementById("ov-dso").textContent = dd.dso;
+        const warn = document.getElementById("sample-warn");
+        warn.style.display = dd.total < 5 && d !== "all" ? "block" : "none";
+      }
+
+      // ═══════════════════════════════
+      // ANIMATE BARS
+      // ═══════════════════════════════
+      function animateAllBars(container) {
+        (container || document)
+          .querySelectorAll("[data-target]")
+          .forEach((el) => {
+            setTimeout(() => {
+              el.style.width = el.dataset.target;
+            }, 30);
+          });
+      }
+
+      // ═══════════════════════════════
+      // RENDER COMPETENCIES (stacked 100% bars)
+      // ═══════════════════════════════
+      function renderCompetencies() {
+        const role = currentRole;
+        const d = COMP_DATA[role];
+        const colors = {
+          BLI: { a: "#1a56a0", b: "#2563eb" },
+          ASO: { a: "#1a7a4a", b: "#16a34a" },
+          DSO: { a: "#b45309", b: "#d97706" },
+        };
+        const c = colors[role];
+        const n = { BLI: 18, ASO: 3, DSO: 2 }[role];
+        const container = document.getElementById("role-comp-container");
+
+        function stackedSection(title, items) {
+          const legend = `<div class="sc-legend">
+      <div class="sc-leg-item"><div class="sc-leg-dot" style="background:#dc2626"></div>0 — Not aware</div>
+      <div class="sc-leg-item"><div class="sc-leg-dot" style="background:#f97316"></div>1 — Basic awareness</div>
+      <div class="sc-leg-item"><div class="sc-leg-dot" style="background:#eab308"></div>2 — Working knowledge</div>
+      <div class="sc-leg-item"><div class="sc-leg-dot" style="background:#22c55e"></div>3 — Proficient</div>
+      <div class="sc-leg-item"><div class="sc-leg-dot" style="background:#15803d"></div>4 — Advanced</div>
+    </div>`;
+
+          // Priority vs proficiency side-by-side
+          const pvpRows = items
+            .map((item) => {
+              const pct = ((item.avg / 4) * 100).toFixed(1);
+              const d0 = item.dist[0] || 0,
+                d1 = item.dist[1] || 0,
+                d2 = item.dist[2] || 0,
+                d3 = item.dist[3] || 0,
+                d4 = item.dist[4] || 0;
+              const total = d0 + d1 + d2 + d3 + d4;
+              return `
+        <div style="margin-bottom:14px;border:1px solid var(--border-light);border-radius:3px;padding:10px 12px" data-tip="${item.name}: average ${item.avg}/4 — ${total} respondents rated">
+          <div style="font-size:12px;font-weight:600;color:var(--text);margin-bottom:8px">${item.name}</div>
+          <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px">
+            <span style="font-size:11px;color:var(--text-dim);width:80px;flex-shrink:0">Distribution</span>
+            <div style="flex:1;display:flex;height:12px;border-radius:2px;overflow:hidden;gap:1px">
+              ${d0 > 0 ? `<div style="flex:${d0};background:#dc2626;transition:flex 0.8s"></div>` : ""}
+              ${d1 > 0 ? `<div style="flex:${d1};background:#f97316;transition:flex 0.8s"></div>` : ""}
+              ${d2 > 0 ? `<div style="flex:${d2};background:#eab308;transition:flex 0.8s"></div>` : ""}
+              ${d3 > 0 ? `<div style="flex:${d3};background:#22c55e;transition:flex 0.8s"></div>` : ""}
+              ${d4 > 0 ? `<div style="flex:${d4};background:#15803d;transition:flex 0.8s"></div>` : ""}
+            </div>
+          </div>
+          <div style="display:flex;align-items:center;gap:8px">
+            <span style="font-size:11px;color:var(--text-dim);width:80px;flex-shrink:0">Average <strong style="color:${c.a}">${item.avg}</strong>/4</span>
+            <div style="flex:1;background:var(--surface2);border-radius:2px;height:8px;overflow:hidden">
+              <div style="width:0%;height:100%;border-radius:2px;background:linear-gradient(90deg,${c.a},${c.b});transition:width 0.9s" data-target="${pct}%"></div>
+            </div>
+          </div>
+        </div>`;
+            })
+            .join("");
+
+          return `
+      <div class="panel" style="margin-bottom:18px">
+        <div class="panel-title">${title}<span class="hindi-sub">Hover over each bar to see the full score breakdown. Average shown for ${n} respondents.</span></div>
+        ${legend}
+        ${pvpRows}
+      </div>`;
+        }
+
+        container.innerHTML = `
+    <div class="grid-2">
+      <div>${stackedSection("Functional Competencies — कार्यात्मक दक्षताएँ", d.functional)}</div>
+      <div>${stackedSection("Domain Competencies — विषय-क्षेत्र दक्षताएँ", d.domain)}</div>
+    </div>`;
+
+        container
+          .querySelectorAll("[data-tip]")
+          .forEach((el) => addTooltip(el, el.dataset.tip));
+        setTimeout(() => animateAllBars(container), 50);
+      }
+
+      // ═══════════════════════════════
+      // RENDER INTEGRATED THEMES
+      // ═══════════════════════════════
+      function renderThemes() {
+        const el = document.getElementById("theme-chart");
+        if (!el) return;
+        const classLabel = {
+          immediate: "Immediate",
+          phase1b: "Phase 1B",
+          later: "Reinforcement / Later",
+        };
+        const classStyle = {
+          immediate: "class-immediate",
+          phase1b: "class-phase1b",
+          later: "class-later",
+        };
+
+        el.innerHTML = THEMES.map(
+          (t) => `
+    <div class="theme-row" data-tip="${t.name} — Priority Signal: ${t.priority}% | Need Signal: ${t.gap}% | Combined Score: ${t.combined}">
+      <div class="theme-priority-class ${classStyle[t.cls]}">${classLabel[t.cls]}</div>
+      <div class="theme-name">${t.name}</div>
+      <div class="theme-bars">
+        <div class="theme-bar-mini">
+          <div class="theme-bar-mini-label" style="font-size:10px;color:var(--text-dim)">Demand</div>
+          <div class="theme-bar-mini-track"><div class="theme-bar-mini-fill priority-fill" style="width:0%" data-target="${t.priority}%"></div></div>
+          <div style="font-size:10px;color:var(--text-dim);width:30px;text-align:right">${t.priority}%</div>
+        </div>
+        <div class="theme-bar-mini">
+          <div class="theme-bar-mini-label" style="font-size:10px;color:var(--text-dim)">Gap</div>
+          <div class="theme-bar-mini-track"><div class="theme-bar-mini-fill gap-fill" style="width:0%" data-target="${t.gap}%"></div></div>
+          <div style="font-size:10px;color:var(--text-dim);width:30px;text-align:right">${t.gap}%</div>
+        </div>
+      </div>
+      <div class="theme-score">${t.combined}</div>
+    </div>`,
+        ).join("");
+
+        el.querySelectorAll("[data-tip]").forEach((e) =>
+          addTooltip(e, e.dataset.tip),
+        );
+        setTimeout(() => animateAllBars(el), 50);
+      }
+
+      // ═══════════════════════════════
+      // RENDER MATRIX (bubble chart as SVG)
+      // ═══════════════════════════════
+      function renderMatrix() {
+        const el = document.getElementById("matrix-chart");
+        if (!el) return;
+        const W = 400,
+          H = 280,
+          PL = 40,
+          PR = 20,
+          PT = 20,
+          PB = 40;
+        const iW = W - PL - PR,
+          iH = H - PT - PB;
+        const clrs = {
+          immediate: "#1a7a4a",
+          phase1b: "#1a56a0",
+          later: "#9ca3af",
+        };
+        const bubbles = THEMES.map((t) => {
+          const x = PL + (t.priority / 80) * iW;
+          const y = PT + iH - (t.gap / 60) * iH;
+          const r = 8 + (t.combined / 58) * 14;
+          const short = t.name
+            .split(" and ")[0]
+            .split(",")[0]
+            .split("—")[0]
+            .trim();
+          return `<circle cx="${x}" cy="${y}" r="${r}" fill="${clrs[t.cls]}" fill-opacity="0.8" stroke="#fff" stroke-width="1.5" style="cursor:pointer">
+      <title>${t.name}\nPriority: ${t.priority}% | Gap: ${t.gap}% | Score: ${t.combined}</title>
+    </circle>
+    <text x="${x}" y="${y + 1}" text-anchor="middle" dominant-baseline="middle" font-size="7" fill="#fff" font-weight="600" pointer-events="none">${short.substring(0, 12)}</text>`;
+        }).join("");
+
+        el.innerHTML = `
+    <div style="display:flex;gap:10px;margin-bottom:10px;flex-wrap:wrap">
+      <div style="display:flex;align-items:center;gap:5px;font-size:11px;color:var(--text-mid)"><div style="width:10px;height:10px;border-radius:50%;background:#1a7a4a"></div> Immediate</div>
+      <div style="display:flex;align-items:center;gap:5px;font-size:11px;color:var(--text-mid)"><div style="width:10px;height:10px;border-radius:50%;background:#1a56a0"></div> Phase 1B</div>
+      <div style="display:flex;align-items:center;gap:5px;font-size:11px;color:var(--text-mid)"><div style="width:10px;height:10px;border-radius:50%;background:#9ca3af"></div> Later</div>
+    </div>
+    <svg width="100%" viewBox="0 0 ${W} ${H}" style="overflow:visible">
+      <!-- Grid lines -->
+      <line x1="${PL}" y1="${PT}" x2="${PL}" y2="${PT + iH}" stroke="#e5e7eb" stroke-width="1"/>
+      <line x1="${PL}" y1="${PT + iH}" x2="${PL + iW}" y2="${PT + iH}" stroke="#e5e7eb" stroke-width="1"/>
+      <!-- Quadrant dividers -->
+      <line x1="${PL + iW / 2}" y1="${PT}" x2="${PL + iW / 2}" y2="${PT + iH}" stroke="#e5e7eb" stroke-width="1" stroke-dasharray="4,3"/>
+      <line x1="${PL}" y1="${PT + iH / 2}" x2="${PL + iW}" y2="${PT + iH / 2}" stroke="#e5e7eb" stroke-width="1" stroke-dasharray="4,3"/>
+      <!-- Quadrant labels -->
+      <text x="${PL + iW * 0.75}" y="${PT + 12}" text-anchor="middle" font-size="8" fill="#9ca3af" font-weight="700">HIGH DEMAND · LARGE GAP</text>
+      <text x="${PL + iW * 0.25}" y="${PT + 12}" text-anchor="middle" font-size="8" fill="#9ca3af">LOW DEMAND · LARGE GAP</text>
+      <text x="${PL + iW * 0.75}" y="${PT + iH - 6}" text-anchor="middle" font-size="8" fill="#9ca3af">HIGH DEMAND · SMALL GAP</text>
+      <!-- Bubbles -->
+      ${bubbles}
+      <!-- Axis labels -->
+      <text x="${PL + iW / 2}" y="${H - 4}" text-anchor="middle" font-size="9" fill="#6b7280">Priority Signal (% of respondents selecting) →</text>
+      <text x="10" y="${PT + iH / 2}" text-anchor="middle" font-size="9" fill="#6b7280" transform="rotate(-90,10,${PT + iH / 2})">← Need Signal (skill gap %)</text>
+      <!-- X axis ticks -->
+      <text x="${PL}" y="${PT + iH + 14}" text-anchor="middle" font-size="8" fill="#9ca3af">0%</text>
+      <text x="${PL + iW / 2}" y="${PT + iH + 14}" text-anchor="middle" font-size="8" fill="#9ca3af">40%</text>
+      <text x="${PL + iW}" y="${PT + iH + 14}" text-anchor="middle" font-size="8" fill="#9ca3af">80%</text>
+    </svg>
+    <p style="font-size:11px;color:var(--text-dim);margin-top:6px;font-style:italic">Bubble size = combined score. Themes in the upper-right zone combine high demand with a large skill gap — strongest candidates for immediate workshops.</p>`;
+      }
+
+      // ═══════════════════════════════
+      // RENDER PRIORITY DEMAND CHART
+      // ═══════════════════════════════
+      function renderPriorityDemand() {
+        const el = document.getElementById("priority-demand-chart");
+        if (!el) return;
+        const max = Math.max(...PRIORITIES_DEMAND.map((d) => d.count));
+        el.innerHTML = PRIORITIES_DEMAND.map((d) => {
+          const clr = d.role === "BLI" ? "#1a56a0" : "#1a7a4a";
+          return `<div class="bar-row" data-tip="${d.name} — selected by ${d.count} respondent(s) (${d.role})">
+      <div class="bar-row-label">${d.name} <span class="bar-n" style="color:${clr}">${d.role} · ${d.count}</span></div>
+      <div class="bar-track"><div class="bar-fill" style="background:${clr};width:0%" data-target="${((d.count / max) * 100).toFixed(1)}%"></div></div>
+    </div>`;
+        }).join("");
+        el.querySelectorAll("[data-tip]").forEach((e) =>
+          addTooltip(e, e.dataset.tip),
+        );
+      }
+
+      // ═══════════════════════════════
+      // RENDER SOFTWARE CHART
+      // ═══════════════════════════════
+      function renderSoftware() {
+        const el = document.getElementById("sw-chart");
+        if (!el) return;
+        const sw = [
+          { name: "MS Office (Word, Excel, PowerPoint)", b: 8, i: 4, a: 11 },
+          { name: "e-Office", b: 11, i: 6, a: 6 },
+          { name: "STATA / E-Views", b: 21, i: 0, a: 2 },
+          { name: "R / Python", b: 19, i: 1, a: 3 },
+          { name: "Artificial Intelligence Tools", b: 18, i: 1, a: 4 },
+        ];
+        el.innerHTML = sw
+          .map(
+            (s) => `
+    <div class="sw-item" data-tip="${s.name}: Beginner ${s.b} | Intermediate ${s.i} | Advanced ${s.a}">
+      <div class="sw-label"><span>${s.name}</span><span style="font-size:11px;color:var(--text-dim)">${s.b}B · ${s.i}I · ${s.a}A</span></div>
+      <div class="sw-stack">
+        ${s.b > 0 ? `<div class="sw-seg sw-seg-b" style="flex:${s.b}"></div>` : ""}
+        ${s.i > 0 ? `<div class="sw-seg sw-seg-i" style="flex:${s.i}"></div>` : ""}
+        ${s.a > 0 ? `<div class="sw-seg sw-seg-a" style="flex:${s.a}"></div>` : ""}
+      </div>
+    </div>`,
+          )
+          .join("");
+        el.querySelectorAll("[data-tip]").forEach((e) =>
+          addTooltip(e, e.dataset.tip),
+        );
+      }
+
+      // ═══════════════════════════════
+      // INIT
+      // ═══════════════════════════════
+      window.addEventListener("load", () => {
+        renderCompetencies();
+        renderThemes();
+        renderMatrix();
+        renderPriorityDemand();
+        renderSoftware();
+        setTimeout(animateAllBars, 200);
+      });
+    </script>
+  </body>
+</html>
